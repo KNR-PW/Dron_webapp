@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Mission Control</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Drone Mission Control</h1>
+            <div class="connection-status" id="connection-status">Disconnected</div>
+        </header>
+
+        <div class="dashboard">
+            <section class="status-panel">
+                <h2>Drone Status</h2>
+                <table id="status-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                            <th>Last Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filled by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="image-panel">
+                <h2>Latest Image</h2>
+                <div class="image-container">
+                    <img id="drone-image" src="/static/placeholder.jpg" alt="Drone Camera Feed">
+                    <div class="image-meta">
+                        <span id="image-timestamp">No image received</span>
+                        <span id="image-size">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="log-panel">
+                <h2>Mission Log</h2>
+                <div class="log-controls">
+                    <button id="refresh-log">Refresh</button>
+                    <button id="clear-log">Clear</button>
+                </div>
+                <div class="log-container" id="mission-log">
+                    <!-- Log entries will be added here -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
