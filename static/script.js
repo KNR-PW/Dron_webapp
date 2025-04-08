@@ -20,6 +20,8 @@ function init() {
     setupEventListeners();
     connectWebSocket();
     fetchInitialData();
+    updateDroneStatus();
+    updateImagePanel();
 }
 
 // Set up event listeners
@@ -261,6 +263,50 @@ function addLogEntry(level, message, timestamp) {
     missionLog.appendChild(logEntry);
     missionLog.scrollTop = missionLog.scrollHeight;
 }
+
+// Funkcja do aktualizacji statusu drona
+function updateDroneStatus() {
+    fetch('/api/status')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('altitude').innerText = data.altitude.toFixed(2);
+            document.getElementById('speed').innerText = data.speed.toFixed(1);
+            document.getElementById('battery').innerText = `${data.battery}%`;
+            document.getElementById('gps').innerText = data.gps;
+            document.getElementById('signal_strength').innerText = `${data.signal_strength} dBm`;
+            document.getElementById('mission_time').innerText = data.mission_time;
+            document.getElementById('flight_mode').innerText = data.flight_mode;
+            document.getElementById('temperature').innerText = `${data.temperature}°C`;
+            document.getElementById('last_update').innerText = data.last_update;
+        })
+        .catch(error => {
+            console.error('Error fetching drone status:', error);
+        });
+}
+
+// Wywołanie funkcji co 5 sekund
+setInterval(updateDroneStatus, 2000);
+
+function updateImagePanel() {
+    fetch('/api/status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.latest_image) {
+                const imageElement = document.getElementById('drone-image');
+                const timestampElement = document.getElementById('image-timestamp');
+                const sizeElement = document.getElementById('image-size');
+
+                imageElement.src = `/data/images/${data.latest_image.filename}`;
+                imageElement.alt = 'Drone Image';
+                timestampElement.textContent = `Uploaded: ${new Date(data.latest_image.timestamp).toLocaleString()}`;
+                sizeElement.textContent = `Size: ${(data.latest_image.size / 1024).toFixed(2)} KB`;
+            }
+        })
+        .catch(error => console.error('Error updating image panel:', error));
+}
+
+// Call this function periodically or after an image upload
+setInterval(updateImagePanel, 5000);
 
 // Start the application
 document.addEventListener('DOMContentLoaded', init);

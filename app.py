@@ -180,6 +180,12 @@ def telemetry_endpoint():
 
     return jsonify({"success": True})
 
+@app.route('/api/log', methods=['DELETE'])
+def clear_log():
+    """Endpoint to clear the mission log"""
+    global mission_log
+    mission_log = []
+    return jsonify({"success": True})
 
 if __name__ == '__main__':
     # Initialize with some data
