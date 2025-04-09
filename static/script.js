@@ -296,7 +296,7 @@ function updateImagePanel() {
                 const timestampElement = document.getElementById('image-timestamp');
                 const sizeElement = document.getElementById('image-size');
 
-                imageElement.src = `/data/images/${data.latest_image.filename}`;
+                imageElement.src = `/images/${data.latest_image.filename}`;
                 imageElement.alt = 'Drone Image';
                 timestampElement.textContent = `Uploaded: ${new Date(data.latest_image.timestamp).toLocaleString()}`;
                 sizeElement.textContent = `Size: ${(data.latest_image.size / 1024).toFixed(2)} KB`;

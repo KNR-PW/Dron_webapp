@@ -71,21 +71,22 @@ def dashboard():
 
 @app.route('/api/status', methods=['GET', 'POST'])
 def handle_status():
-    """Endpoint for status updates and retrieval"""
-    global drone_status
+    global drone_status, latest_image
 
     if request.method == 'POST':
-        # Update status from incoming data
         new_data = request.get_json()
         if new_data:
             drone_status.update(new_data)
             drone_status['last_update'] = datetime.utcnow().isoformat()
             log_message("info", f"Status updated: {new_data}")
-
         return jsonify({"success": True, "status": drone_status})
 
-    # GET request returns current status
-    return jsonify(drone_status)
+    # GET request returns current status + latest image
+    return jsonify({
+        **drone_status,
+        "latest_image": latest_image  # add this line
+    })
+
 
 
 @app.route('/api/image', methods=['POST'])
