@@ -266,6 +266,16 @@ function addLogEntry(level, message, timestamp) {
     missionLog.appendChild(logEntry);
     missionLog.scrollTop = missionLog.scrollHeight;
 }
+function updateFlightStatusIndicator(flightMode) {
+    const indicator = document.getElementById('flight-status-indicator');
+    if (!indicator) return;
+
+    if (flightMode === "INIT") {
+        indicator.classList.remove('active'); // Czerwony
+    } else {
+        indicator.classList.add('active'); // Zielony
+    }
+}
 
 // Funkcja do aktualizacji statusu drona
 function updateDroneStatus() {
@@ -281,17 +291,21 @@ function updateDroneStatus() {
             document.getElementById('flight_mode').innerText = data.flight_mode;
             document.getElementById('temperature').innerText = `${data.temperature}°C`;
             document.getElementById('last_update').innerText = data.last_update;
+
+            // ➡️ Dodajemy to tu:
+            updateFlightStatusIndicator(data.flight_mode);
         })
         .catch(error => {
             console.error('Error fetching drone status:', error);
         });
 }
 
+
 // Wywołanie funkcji co 5 sekund
 setInterval(updateDroneStatus, 2000);
 
 function updateImagePanel() {
-    if (manualImageSelected) return; // 👈 Jeśli wybrane ręcznie, nie aktualizuj!
+    //if (manualImageSelected) return; // 👈 Jeśli wybrane ręcznie, nie aktualizuj!
 
     fetch('/api/status')
         .then(response => response.json())
@@ -312,7 +326,7 @@ function updateImagePanel() {
 
 
 // Call this function periodically or after an image upload
-setInterval(updateImagePanel, 5000); setInterval(loadGallery, 10000);
+setInterval(updateImagePanel, 10000); setInterval(loadGallery, 10000);   //USTAWIENIA CZASU WYSWIETLANIA ZDJECIA Z GALERII
 
 function loadGallery() {
     fetch('/api/images')
