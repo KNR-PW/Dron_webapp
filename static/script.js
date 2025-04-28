@@ -4,6 +4,8 @@ let reconnectInterval = 1000;
 let maxReconnectAttempts = 10;
 let reconnectAttempts = 0;
 let isConnected = false;
+let manualImageSelected = false;
+
 
 // DOM elements
 const statusTable = document.querySelector('#status-table tbody');
@@ -22,6 +24,7 @@ function init() {
     fetchInitialData();
     updateDroneStatus();
     updateImagePanel();
+    loadGallery();
 }
 
 // Set up event listeners
@@ -288,6 +291,8 @@ function updateDroneStatus() {
 setInterval(updateDroneStatus, 2000);
 
 function updateImagePanel() {
+    if (manualImageSelected) return; // 👈 Jeśli wybrane ręcznie, nie aktualizuj!
+
     fetch('/api/status')
         .then(response => response.json())
         .then(data => {
@@ -305,8 +310,64 @@ function updateImagePanel() {
         .catch(error => console.error('Error updating image panel:', error));
 }
 
+
 // Call this function periodically or after an image upload
-setInterval(updateImagePanel, 5000);
+setInterval(updateImagePanel, 5000); setInterval(loadGallery, 10000);
+
+function loadGallery() {
+    fetch('/api/images')
+        .then(response => response.json())
+        .then(data => {
+            const gallery = document.getElementById('gallery-container');
+            gallery.innerHTML = ''; // Wyczyść stare miniaturki
+
+            data.images.forEach(filename => {
+                const img = document.createElement('img');
+                img.src = `/images/${filename}`;
+                img.className = 'thumbnail';
+                img.alt = filename;
+
+                // Kliknięcie zmienia duży obrazek
+                img.addEventListener('click', () => {
+    const mainImage = document.getElementById('drone-image');
+    const timestampElement = document.getElementById('image-timestamp');
+    const sizeElement = document.getElementById('image-size');
+
+    mainImage.src = `/images/${filename}`;
+    manualImageSelected = true; // <- Użytkownik kliknął ręcznie!
+
+    // Pobierz metadane z prawidłowej ścieżki
+    fetch(`/images/${filename}`, { method: 'HEAD' })
+        .then(response => {
+            const size = response.headers.get('content-length');
+            const lastModified = response.headers.get('last-modified');
+
+            if (lastModified) {
+                const uploadedDate = new Date(lastModified);
+                timestampElement.textContent = `Uploaded: ${uploadedDate.toLocaleString()}`;
+            } else {
+                timestampElement.textContent = `Uploaded: Unknown`;
+            }
+
+            if (size) {
+                sizeElement.textContent = `Size: ${(size / 1024).toFixed(2)} KB`;
+            } else {
+                sizeElement.textContent = `Size: Unknown`;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching image metadata:', error);
+        });
+});
+
+
+
+                gallery.appendChild(img);
+            });
+        })
+        .catch(error => console.error('Error loading gallery:', error));
+}
+
 
 // Start the application
 document.addEventListener('DOMContentLoaded', init);

@@ -188,6 +188,13 @@ def clear_log():
     mission_log = []
     return jsonify({"success": True})
 
+@app.route('/api/images', methods=['GET'])
+def list_images():
+    """Return list of uploaded images"""
+    files = os.listdir(app.config['UPLOAD_FOLDER'])
+    images = sorted(files, reverse=True)  # Najnowsze na początku
+    return jsonify({"images": images})
+
 if __name__ == '__main__':
     # Initialize with some data
     log_message("info", "Drone web application started")
