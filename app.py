@@ -206,7 +206,7 @@ if __name__ == '__main__':
     # Run the server
     app.run(
         host='0.0.0.0',
-        port=80,
+        port=5000,
         threaded=True,
         debug=False  # Set to False in production!
     )
