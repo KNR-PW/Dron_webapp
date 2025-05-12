@@ -14,7 +14,8 @@ const imageTimestamp = document.getElementById('image-timestamp');
 const imageSize = document.getElementById('image-size');
 const missionLog = document.getElementById('mission-log');
 const connectionStatus = document.getElementById('connection-status');
-const refreshLogBtn = document.getElementById('refresh-log');
+
+const clearGallery = document.getElementById('clear-gallery');
 const clearLogBtn = document.getElementById('clear-log');
 
 // Initialize the application
@@ -29,8 +30,9 @@ function init() {
 
 // Set up event listeners
 function setupEventListeners() {
-    refreshLogBtn.addEventListener('click', fetchLogs);
+
     clearLogBtn.addEventListener('click', clearLogs);
+    clearGallery.addEventListener('click', clearGal);
 
     // Handle window resize for image display
     window.addEventListener('resize', () => {
@@ -215,13 +217,15 @@ function fetchLogs() {
         .then(response => response.json())
         .then(data => {
             updateLogDisplay(data.logs);
-            addLogEntry('info', 'Logs refreshed');
+            // addLogEntry('info', 'Logs refreshed');
         })
         .catch(error => {
             console.error('Error fetching logs:', error);
             addLogEntry('error', `Failed to refresh logs: ${error.message}`);
         });
 }
+
+setInterval(fetchLogs, 5000); // Fetch logs every 5 seconds
 
 function clearLogs() {
     if (confirm('Are you sure you want to clear the mission log?')) {
@@ -238,6 +242,28 @@ function clearLogs() {
             console.error('Error clearing logs:', error);
             addLogEntry('error', `Failed to clear logs: ${error.message}`);
         });
+    }
+}
+
+function clearGal() {
+    if (confirm('Are you sure you want to clear the gallery?')){
+        fetch('/api/images',{
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (response.ok) {
+                    addLogEntry('info', 'Gallery cleared');
+                    loadGallery()
+                } else{
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Failed to clear gallery');
+                    });
+                }
+        })
+            .catch(error => {
+                console.error('Error clearing gallery:', error);
+                addLogEntry('error', `Failed to clear gallery: ${error.message}`);
+            });
     }
 }
 

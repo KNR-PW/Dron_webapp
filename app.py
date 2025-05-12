@@ -195,12 +195,27 @@ def list_images():
     images = sorted(files, reverse=True)  # Najnowsze na początku
     return jsonify({"images": images})
 
+@app.route('/api/images', methods=['DELETE'])
+def clear_galery():
+    folder = app.config['UPLOAD_FOLDER']
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            log_message("error", f"Error deleting a file {file_path}: {str(e)}")
+            return jsonify({"success": False, "error": f"Failed to delete: {str(e)}"}), 500
+
+    log_message("info", "Gallery cleared")
+    return jsonify({"success": True, "message": "Gallery cleared"})
+
 if __name__ == '__main__':
     # Initialize with some data
     log_message("info", "Drone web application started")
     drone_status.update({
         "flight_mode": "STANDBY",
-        "gps": "47.6062,-122.3321"  # Example: Seattle coordinates
+        "gps": "52,21"  # Example: Warsaw coordinates
     })
 
     # Run the server
