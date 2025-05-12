@@ -16,4 +16,7 @@ docker build -t webapp .
 docker run -p 5000:5000 [id]
 ```
 3. potem localhost:5000
-4. Simulator.py i photoPost.py można uruchomić w dockerze 
+4. Simulator.py i photoPost.py można uruchomić w dockerze
+```bash
+python photoPost.py -i [image.jpg]
+```
