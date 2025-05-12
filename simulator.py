@@ -3,8 +3,8 @@ import time
 import random
 from datetime import datetime
 
-BASE_URL = "http://localhost:5000"
-
+# BASE_URL = "http://localhost:5000"
+BASE_URL = "https://osadniik.pythonanywhere.com/"
 
 def send_update():
     data = {
@@ -13,7 +13,7 @@ def send_update():
         "battery": random.randint(70, 100),
         "gps": f"{round(random.uniform(47.5, 47.7), 4)},{round(random.uniform(-122.4, -122.3), 4)}",
         "signal_strength": random.randint(-80, -50),
-        "flight_mode": random.choice(["AUTO", "GUIDED", "LOITER", "RTL"]),
+        "flight_mode": random.choice(["AUTO", "GUIDED", "LOITER", "RTL", "INIT"]),
         "temperature": round(random.uniform(20, 35), 1)
     }
 

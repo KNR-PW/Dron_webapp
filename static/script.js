@@ -270,7 +270,7 @@ function updateFlightStatusIndicator(flightMode) {
     const indicator = document.getElementById('flight-status-indicator');
     if (!indicator) return;
 
-    if (flightMode === "INIT") {
+    if (flightMode === "INIT" || flightMode === "NONE"){
         indicator.classList.remove('active'); // Czerwony
     } else {
         indicator.classList.add('active'); // Zielony
@@ -302,7 +302,7 @@ function updateDroneStatus() {
 
 
 // Wywołanie funkcji co 5 sekund
-setInterval(updateDroneStatus, 2000);
+setInterval(updateDroneStatus, 1000);
 
 function updateImagePanel() {
     //if (manualImageSelected) return; // 👈 Jeśli wybrane ręcznie, nie aktualizuj!

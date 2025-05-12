@@ -2,7 +2,8 @@ import requests
 import argparse
 import os
 
-BASE_URL = "http://localhost:5000"
+# BASE_URL = "http://localhost:5000"
+BASE_URL = "https://osadniik.pythonanywhere.com/"
 
 def send_image(image_path):
     if not os.path.exists(image_path):

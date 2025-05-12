@@ -4,6 +4,9 @@ from datetime import datetime
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 import logging
+import base64
+from io import BytesIO
+from PIL import Image
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -78,7 +81,7 @@ def handle_status():
         if new_data:
             drone_status.update(new_data)
             drone_status['last_update'] = datetime.utcnow().isoformat()
-            log_message("info", f"Status updated: {new_data}")
+            # log_message("info", f"Status updated: {new_data}")
         return jsonify({"success": True, "status": drone_status})
 
     # GET request returns current status + latest image
@@ -113,7 +116,7 @@ def upload_image():
         "size": os.path.getsize(filepath)
     }
 
-    log_message("info", f"New image received: {filename}")
+    # log_message("info", f"New image received: {filename}")
     return jsonify({"success": True, "image": latest_image})
 
 
@@ -155,10 +158,6 @@ def telemetry_endpoint():
     # Handle image if included (as base64)
     if 'image' in data and data['image']:
         try:
-            import base64
-            from io import BytesIO
-            from PIL import Image
-
             img_data = data['image'].split(',')[1]  # Remove data:image/... prefix
             img = Image.open(BytesIO(base64.b64decode(img_data)))
             filename = f"{int(time.time())}_drone_capture.jpg"
@@ -199,7 +198,7 @@ if __name__ == '__main__':
     # Initialize with some data
     log_message("info", "Drone web application started")
     drone_status.update({
-        "flight_mode": "STANDBY",
+        "flight_mode": "INIT",
         "gps": "47.6062,-122.3321"  # Example: Seattle coordinates
     })
 
