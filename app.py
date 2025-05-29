@@ -78,7 +78,7 @@ mission_log: list[dict] = []
 ###############################################################################
 
 def log_message(level: str, message: str) -> None:
-    """Append message to in‑memory & file logs (rolling buffer)."""
+    """Append message to in‑memory and file logs (rolling buffer)."""
     entry = {
         "timestamp": datetime.utcnow().isoformat(),
         "level": level,

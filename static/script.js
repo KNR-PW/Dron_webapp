@@ -26,6 +26,7 @@ function init() {
     updateDroneStatus();
     updateImagePanel();
     loadGallery();
+    restartVideo();
 }
 
 // Set up event listeners
@@ -408,6 +409,69 @@ function loadGallery() {
         .catch(error => console.error('Error loading gallery:', error));
 }
 
+// Inicjalizacja po stronie klienta WebRTC
+let peerConnection = null;
+const videoElement = document.getElementById('drone-camera-view');
+// Konfiguracja STUN
+const config = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' }
+  ]
+};
+function startCameraView() {
+    peerConnection = new RTCPeerConnection(config);
+
+    peerConnection.ontrack = function(event) {
+        // Przyjmujemy strumień video (jeden track = video z drona)
+        videoElement.srcObject = event.streams[0];
+    };
+
+    // Komunikacja sygnalizacyjna przez WebSocket/REST/API
+    // To wymaga podpięcia do backendu, który pośredniczy między klientami
+    socket.onmessage = (event) => {
+        let data = JSON.parse(event.data);
+        if (data.webrtc_offer) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(data.webrtc_offer))
+                .then(() => peerConnection.createAnswer())
+                .then(answer => peerConnection.setLocalDescription(answer))
+                .then(() => {
+                    // Wysyłka odpowiedzi SDP do serwera
+                    socket.send(JSON.stringify({webrtc_answer: peerConnection.localDescription}));
+                });
+        }
+        if (data.ice_candidate) {
+            peerConnection.addIceCandidate(new RTCIceCandidate(data.ice_candidate));
+        }
+    };
+    // Wysyłanie własnych kandydatów ICE
+    peerConnection.onicecandidate = function(event) {
+        if (event.candidate) {
+            socket.send(JSON.stringify({ice_candidate: event.candidate}));
+        }
+    };
+}
+
+// Wywołaj funkcję, gdy strona się załaduje lub gdy użytkownik zechce podgląd
+window.addEventListener('DOMContentLoaded', startCameraView);
 
 // Start the application
 document.addEventListener('DOMContentLoaded', init);
+const videoEl = document.getElementById('drone-camera-view');
+function restartVideo() {
+  videoEl.currentTime = 0;
+  videoEl.play();
+}
+function startWebcamTest() {
+    const video = document.getElementById('drone-camera-view');
+    // Zapytanie o dostęp do kamerki i mikrofonu (tylko kamerka, jeśli 'video:true, audio:false')
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(error => {
+            alert('Błąd podczas uruchamiania kamery: ' + error);
+        });
+}
+
+// Wywołaj funkcję automatycznie po załadowaniu strony lub z przycisku testowego
+window.addEventListener('DOMContentLoaded', startWebcamTest);
