@@ -11,58 +11,124 @@
         <header>
             <h1>Drone Mission Control</h1>
             <div class="flight-status">
-    <span id="flight-status-indicator" class="indicator"></span> Drone Status
-</div>
-
+                <span id="flight-status-indicator" class="indicator"></span> Drone Status
+            </div>
         </header>
 
         <div class="dashboard">
+            <!-- ========================= DRONE STATUS ======================== -->
             <section class="status-panel">
                 <h2>Drone Status</h2>
                 <table>
-                    <tr><th>Height</th><td id="altitude">0.0</td></tr>
-                    <tr><th>Speed</th><td id="speed">0.0</td></tr>
-                    <tr><th>Battery</th><td id="battery">100%</td></tr>
-                    <tr><th>GPS</th><td id="gps">0.0,0.0</td></tr>
-                    <tr><th>Signal</th><td id="signal_strength">-50 dBm</td></tr>
-                    <tr><th>Mission time</th><td id="mission_time">00:00:00</td></tr>
-                    <tr><th>Flight mode</th><td id="flight_mode">INIT</td></tr>
-                    <tr><th>Temperature</th><td id="temperature">25.0°C</td></tr>
-                    <tr><th>Last update</th><td id="last_update">-</td></tr>
+                    <tr><th>Height</th>        <td id="altitude">0.0</td></tr>
+                    <tr><th>Speed</th>         <td id="speed">0.0</td></tr>
+                    <tr><th>Battery</th>       <td id="battery">100%</td></tr>
+                    <tr><th>GPS</th>           <td id="gps">0.0,0.0</td></tr>
+                    <tr><th>Signal</th>        <td id="signal_strength">-50 dBm</td></tr>
+                    <tr><th>Mission time</th>  <td id="mission_time">00:00:00</td></tr>
+                    <tr><th>Flight mode</th>   <td id="flight_mode">INIT</td></tr>
+                    <tr><th>Temperature</th>   <td id="temperature">25.0°C</td></tr>
+                    <tr><th>Last update</th>   <td id="last_update">-</td></tr>
                 </table>
             </section>
 
+            <!-- ========================= CAMERA IMAGE ======================= -->
             <section class="image-panel">
-    <h2>Latest Image</h2>
+                <h2>Latest Image</h2>
+                <div class="image-container">
+                    <img id="drone-image" src="/static/placeholder.jpg" alt="Drone Camera Feed">
+                    <div class="image-meta">
+                        <span id="image-timestamp">No image received</span>
+                        <span id="image-size">-</span>
+                    </div>
+                </div>
 
-    <div class="image-container">
-        <img id="drone-image" src="/static/placeholder.jpg" alt="Drone Camera Feed">
-        <div class="image-meta">
-            <span id="image-timestamp">No image received</span>
-            <span id="image-size">-</span>
-        </div>
-    </div>
+                <!-- Gallery thumbnails will be injected here -->
+                <div class="gallery-container" id="gallery-container"></div>
+            </section>
 
-    <!-- TU DODAJEMY galerię miniatur -->
-    <div class="gallery-container" id="gallery-container">
-        <!-- Miniatury będą ładowane tutaj dynamicznie przez JavaScript -->
-    </div>
-
-</section>
-
+            <!-- ========================= MISSION LOG ======================== -->
             <section class="log-panel">
                 <h2>Mission Log</h2>
                 <div class="log-controls">
                     <button id="clear-gallery">Clear gallery</button>
                     <button id="clear-log">Clear</button>
                 </div>
-                <div class="log-container" id="mission-log">
-                    <!-- Log entries will be added here -->
-                </div>
+                <div class="log-container" id="mission-log"></div>
             </section>
-        </div>
-    </div>
+        </div> <!-- /dashboard -->
+    </div> <!-- /container -->
 
+    <!-- ========================= GOOGLE MAP ============================== -->
+    <div id="map" style="height: 400px; width: 100%; margin-top: 1rem;"></div>
+
+    <!-- ========================= Scripts ================================= -->
     <script src="/static/script.js"></script>
+
+    <script>
+        // ------------------- Google Maps initialisation -------------------
+        let map, marker;
+
+        function initMap() {
+            // initial dummy position – will be replaced at first update
+            const startPos = { lat: 0, lng: 0 };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 16,
+                center: startPos,
+                mapTypeId: "satellite",
+            });
+
+            marker = new google.maps.Marker({
+                position: startPos,
+                map,
+                icon: {
+                    url: "{{ url_for('static', filename='plane.png') }}",
+                    scaledSize: new google.maps.Size(40, 40),
+                    anchor: new google.maps.Point(20, 20),
+                },
+            });
+
+            updatePosition();
+            // refresh every 3 s
+            setInterval(updatePosition, 3000);
+        }
+
+        function updatePosition() {
+            fetch("/api/next_gps")
+                .then((r) => r.json())
+                .then((data) => {
+                    if (!data.gps) return;
+                    const [lat, lon] = data.gps.split(",").map(Number);
+                    const pos = { lat, lng: lon };
+
+                    const currentPos = marker.getPosition();
+                    const deltaLat = (pos.lat - currentPos.lat()) / 20;
+                    const deltaLng = (pos.lng - currentPos.lng()) / 20;
+                    let step = 0;
+
+                    const animate = () => {
+                        if (step >= 20) return;
+                        const nextLat = currentPos.lat() + deltaLat * step;
+                        const nextLng = currentPos.lng() + deltaLng * step;
+                        const nextPos = { lat: nextLat, lng: nextLng };
+                        marker.setPosition(nextPos);
+                        step++;
+                        requestAnimationFrame(animate);
+                    };
+
+                    animate();
+                    map.panTo(pos);
+
+                    // Update status table as well (optional convenience)
+                    document.getElementById("gps").textContent = data.gps;
+                    document.getElementById("last_update").textContent = new Date().toLocaleTimeString();
+                })
+                .catch((err) => console.error("GPS fetch error:", err));
+        }
+    </script>
+
+    <!-- Google Maps JS SDK (async) -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script>
 </body>
 </html>
