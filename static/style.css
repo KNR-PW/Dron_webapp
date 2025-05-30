@@ -222,6 +222,25 @@ button:hover {
     font-weight: bold;
 }
 
+.status-panel table tr {
+    height: 48px;           /* Możesz dostosować wartość do własnych potrzeb */
+}
+
+/* Wyrównuje zawartość komórek do środka w pionie */
+.status-panel table th,
+.status-panel table td {
+    vertical-align: middle;
+}
+
+/* Opcjonalnie: ustawia szerokości kolumn, by nie rozciągały się przy dłuższych tekstach */
+.status-panel table th {
+    width: 160px;           /* Możesz dostosować szerokość */
+}
+.status-panel table td {
+    width: 260px;
+    word-break: break-all;  /* Przy długim tekście wymusza łamanie linii */
+}
+
 @media (max-width: 768px) {
     .dashboard {
         grid-template-columns: 1fr;

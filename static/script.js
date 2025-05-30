@@ -6,6 +6,9 @@ let reconnectAttempts = 0;
 let isConnected = false;
 let manualImageSelected = false;
 
+// Mission timer variables
+let missionStartTime = null;
+let missionTimerInterval = null;
 
 // DOM elements
 const statusTable = document.querySelector('#status-table tbody');
@@ -18,6 +21,30 @@ const connectionStatus = document.getElementById('connection-status');
 const clearGallery = document.getElementById('clear-gallery');
 const clearLogBtn = document.getElementById('clear-log');
 
+// =================== MISSION TIMER ==========================
+function formatMissionTime(seconds) {
+    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    return `${h}:${m}:${s}`;
+}
+
+// Start mission timer (called on page load)
+function startMissionTimer() {
+    if (missionTimerInterval) clearInterval(missionTimerInterval);
+    missionStartTime = Date.now();
+    updateMissionTime(); // od razu ustaw 00:00:00
+
+    missionTimerInterval = setInterval(updateMissionTime, 1000);
+}
+
+function updateMissionTime() {
+    if (!missionStartTime) return;
+    const elapsed = Math.floor((Date.now() - missionStartTime) / 1000);
+    document.getElementById('mission_time').innerText = formatMissionTime(elapsed);
+}
+// ============================================================
+
 // Initialize the application
 function init() {
     setupEventListeners();
@@ -27,6 +54,7 @@ function init() {
     updateImagePanel();
     loadGallery();
     restartVideo();
+    startMissionTimer(); // Start the mission timer on page load
 }
 
 // Set up event listeners
@@ -314,7 +342,8 @@ function updateDroneStatus() {
             document.getElementById('battery').innerText = `${data.battery}%`;
             document.getElementById('gps').innerText = data.gps;
             document.getElementById('signal_strength').innerText = `${data.signal_strength} dBm`;
-            document.getElementById('mission_time').innerText = data.mission_time;
+            // document.getElementById('mission_time').innerText = data.mission_time;
+            // Mission time is now handled by frontend JS timer!
             document.getElementById('flight_mode').innerText = data.flight_mode;
             document.getElementById('temperature').innerText = `${data.temperature}°C`;
             document.getElementById('last_update').innerText = data.last_update;
@@ -327,8 +356,7 @@ function updateDroneStatus() {
         });
 }
 
-
-// Wywołanie funkcji co 5 sekund
+// Wywołanie funkcji co 2 sekundy
 setInterval(updateDroneStatus, 2000);
 
 function updateImagePanel() {
@@ -351,9 +379,9 @@ function updateImagePanel() {
         .catch(error => console.error('Error updating image panel:', error));
 }
 
-
 // Call this function periodically or after an image upload
-setInterval(updateImagePanel, 10000); setInterval(loadGallery, 10000);   //USTAWIENIA CZASU WYSWIETLANIA ZDJECIA Z GALERII
+setInterval(updateImagePanel, 10000);
+setInterval(loadGallery, 10000);   //USTAWIENIA CZASU WYSWIETLANIA ZDJECIA Z GALERII
 
 function loadGallery() {
     fetch('/api/images')
@@ -370,39 +398,36 @@ function loadGallery() {
 
                 // Kliknięcie zmienia duży obrazek
                 img.addEventListener('click', () => {
-    const mainImage = document.getElementById('drone-image');
-    const timestampElement = document.getElementById('image-timestamp');
-    const sizeElement = document.getElementById('image-size');
+                    const mainImage = document.getElementById('drone-image');
+                    const timestampElement = document.getElementById('image-timestamp');
+                    const sizeElement = document.getElementById('image-size');
 
-    mainImage.src = `/images/${filename}`;
-    manualImageSelected = true; // <- Użytkownik kliknął ręcznie!
+                    mainImage.src = `/images/${filename}`;
+                    manualImageSelected = true; // <- Użytkownik kliknął ręcznie!
 
-    // Pobierz metadane z prawidłowej ścieżki
-    fetch(`/images/${filename}`, { method: 'HEAD' })
-        .then(response => {
-            const size = response.headers.get('content-length');
-            const lastModified = response.headers.get('last-modified');
+                    // Pobierz metadane z prawidłowej ścieżki
+                    fetch(`/images/${filename}`, { method: 'HEAD' })
+                        .then(response => {
+                            const size = response.headers.get('content-length');
+                            const lastModified = response.headers.get('last-modified');
 
-            if (lastModified) {
-                const uploadedDate = new Date(lastModified);
-                timestampElement.textContent = `Uploaded: ${uploadedDate.toLocaleString()}`;
-            } else {
-                timestampElement.textContent = `Uploaded: Unknown`;
-            }
+                            if (lastModified) {
+                                const uploadedDate = new Date(lastModified);
+                                timestampElement.textContent = `Uploaded: ${uploadedDate.toLocaleString()}`;
+                            } else {
+                                timestampElement.textContent = `Uploaded: Unknown`;
+                            }
 
-            if (size) {
-                sizeElement.textContent = `Size: ${(size / 1024).toFixed(2)} KB`;
-            } else {
-                sizeElement.textContent = `Size: Unknown`;
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching image metadata:', error);
-        });
-});
-
-
-
+                            if (size) {
+                                sizeElement.textContent = `Size: ${(size / 1024).toFixed(2)} KB`;
+                            } else {
+                                sizeElement.textContent = `Size: Unknown`;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching image metadata:', error);
+                        });
+                });
                 gallery.appendChild(img);
             });
         })
@@ -443,7 +468,7 @@ function startCameraView() {
             peerConnection.addIceCandidate(new RTCIceCandidate(data.ice_candidate));
         }
     };
-    // Wysyłanie własnych kandydatów ICE
+    // Wysyłanie własnych kandydatów
     peerConnection.onicecandidate = function(event) {
         if (event.candidate) {
             socket.send(JSON.stringify({ice_candidate: event.candidate}));
@@ -452,7 +477,7 @@ function startCameraView() {
 }
 
 // Wywołaj funkcję, gdy strona się załaduje lub gdy użytkownik zechce podgląd
-window.addEventListener('DOMContentLoaded', startCameraView);
+// window.addEventListener('DOMContentLoaded', startCameraView);
 
 // Start the application
 document.addEventListener('DOMContentLoaded', init);
@@ -473,5 +498,16 @@ function startWebcamTest() {
         });
 }
 
+document.getElementById('test-webcam-btn').addEventListener('click', () => {
+    startWebcamTest();
+});
+
+document.getElementById('connect-drone-btn').addEventListener('click', () => {
+    startCameraView();
+});
+
 // Wywołaj funkcję automatycznie po załadowaniu strony lub z przycisku testowego
-window.addEventListener('DOMContentLoaded', startWebcamTest);
+//window.addEventListener('DOMContentLoaded', startWebcamTest);
+
+// Aktualizuj licznik misji co sekundę
+setInterval(updateMissionTime, 1000);

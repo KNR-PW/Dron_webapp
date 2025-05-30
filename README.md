@@ -5,6 +5,7 @@ pip install -r requirements.txt
 ```
 2. Potem wlaczasz zioma 
 3. Potem localhost:5000
+4. Kamere można testować lokalnie i webrtc
 
 ### Ewentualnie 
 1. budujesz dockera 
