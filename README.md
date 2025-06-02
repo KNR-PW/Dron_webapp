@@ -5,7 +5,7 @@ pip install -r requirements.txt
 ```
 2. Potem wlaczasz zioma 
 3. Potem localhost:5000
-4. Kamera  na drugim urządzeniu w tej samej sieci wejdz na  http://<IP_SERWERA>:5000/
+4. Kamera : na drugim urządzeniu w tej samej sieci wejdz na  http://<IP_SERWERA>:5000/
 
 ### Ewentualnie 
 1. budujesz dockera 
