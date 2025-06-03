@@ -4231,3 +4231,75 @@
 2025-06-03 19:44:47,664 — INFO — 127.0.0.1 - - [03/Jun/2025 19:44:47] "POST /api/status HTTP/1.1" 200 -
 2025-06-03 19:44:48,163 — INFO — Status updated: {'altitude': 0, 'speed': 0, 'battery': 0, 'gps': '0, 0', 'signal_strength': 0, 'flight_mode': 'NONE', 'temperature': 0}
 2025-06-03 19:44:48,164 — INFO — 127.0.0.1 - - [03/Jun/2025 19:44:48] "POST /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:25,334 — INFO — Drone web application started
+2025-06-04 00:27:25,356 — INFO — [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.136:5000
+2025-06-04 00:27:25,357 — INFO — [33mPress CTRL+C to quit[0m
+2025-06-04 00:27:26,067 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET / HTTP/1.1" 200 -
+2025-06-04 00:27:26,114 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "[33mGET /static/placeholder.jpg HTTP/1.1[0m" 404 -
+2025-06-04 00:27:26,239 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /static/style.css HTTP/1.1" 200 -
+2025-06-04 00:27:26,241 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /static/script.js HTTP/1.1" 200 -
+2025-06-04 00:27:26,304 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:26,307 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:26,310 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /api/log HTTP/1.1" 200 -
+2025-06-04 00:27:26,311 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /api/images HTTP/1.1" 200 -
+2025-06-04 00:27:26,316 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:26,323 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:26,684 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /api/next_gps HTTP/1.1" 200 -
+2025-06-04 00:27:26,984 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:26] "GET /video_feed HTTP/1.1" 200 -
+2025-06-04 00:27:27,348 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:27] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:27,691 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:27] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-04 00:27:28,295 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:28] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:28,367 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:28] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:29,370 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:29] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:29,678 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:29] "GET /api/next_gps HTTP/1.1" 200 -
+2025-06-04 00:27:30,293 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:30] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:30,376 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:30] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:31,290 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:31] "GET /api/log HTTP/1.1" 200 -
+2025-06-04 00:27:31,382 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:31] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:32,290 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:32] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:32,389 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:32] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:32,678 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:32] "GET /api/next_gps HTTP/1.1" 200 -
+2025-06-04 00:27:33,402 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:33] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:34,290 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:34] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:34,423 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:34] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:35,455 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:35] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:35,678 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:35] "GET /api/next_gps HTTP/1.1" 200 -
+2025-06-04 00:27:36,293 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:36] "GET /api/log HTTP/1.1" 200 -
+2025-06-04 00:27:36,295 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:36] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:36,296 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:36] "GET /api/images HTTP/1.1" 200 -
+2025-06-04 00:27:36,300 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:36] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:36,556 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:36] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-06-04 00:27:38,291 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:38] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:27:38,678 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:38] "GET /api/next_gps HTTP/1.1" 200 -
+2025-06-04 00:27:40,292 — INFO — 127.0.0.1 - - [04/Jun/2025 00:27:40] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:33:31,422 — INFO — Drone web application started
+2025-06-04 00:33:31,445 — INFO — [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.136:5000
+2025-06-04 00:33:31,445 — INFO — [33mPress CTRL+C to quit[0m
+2025-06-04 00:33:31,446 — INFO —  * Restarting with stat
+2025-06-04 00:33:32,016 — INFO — Drone web application started
+2025-06-04 00:33:32,030 — WARNING —  * Debugger is active!
+2025-06-04 00:33:32,132 — INFO —  * Debugger PIN: 132-329-555
+2025-06-04 00:33:36,153 — INFO — 127.0.0.1 - - [04/Jun/2025 00:33:36] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:36:13,014 — INFO —  * Detected change in '/home/stas/KNR/Dron_webapp/app.py', reloading
+2025-06-04 00:36:13,063 — INFO —  * Restarting with stat
+2025-06-04 00:36:13,753 — INFO — Drone web application started
+2025-06-04 00:36:13,761 — WARNING —  * Debugger is active!
+2025-06-04 00:36:13,761 — INFO —  * Debugger PIN: 132-329-555
+2025-06-04 00:36:15,699 — INFO — Drone web application started
+2025-06-04 00:36:15,715 — INFO — [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.136:5000
+2025-06-04 00:36:15,715 — INFO — [33mPress CTRL+C to quit[0m
+2025-06-04 00:36:15,716 — INFO —  * Restarting with stat
+2025-06-04 00:36:16,480 — INFO — Drone web application started
+2025-06-04 00:36:16,493 — WARNING —  * Debugger is active!
+2025-06-04 00:36:16,493 — INFO —  * Debugger PIN: 132-329-555
+2025-06-04 00:36:18,131 — INFO — 127.0.0.1 - - [04/Jun/2025 00:36:18] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 00:36:21,442 — INFO — 127.0.0.1 - - [04/Jun/2025 00:36:21] "GET /api/status HTTP/1.1" 200 -

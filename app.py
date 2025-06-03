@@ -143,9 +143,7 @@ def handle_status():
         if new_data:
             drone_status.update(new_data)
             drone_status["last_update"] = datetime.utcnow().isoformat()
-            drone_status.update(new_data)
-            drone_status["last_update"] = datetime.utcnow().isoformat()
-            log_message("info", f"Status updated: {new_data}")
+            # log_message("info", f"Status updated: {new_data}")
         return jsonify({"success": True, "status": drone_status})
 
     # GET: current status + latest image
@@ -162,7 +160,7 @@ def handle_status():
 def api_next_gps():
     """Return next GPS coordinate from the predefined list."""
     point = get_next_gps()  # e.g. "52.23,21.01"
-    drone_status["gps"] = point
+    drone_status["gps_global"] = point
     drone_status["last_update"] = datetime.utcnow().isoformat()
     return jsonify({"gps": point})
 
@@ -190,7 +188,7 @@ def upload_image():
         "timestamp": datetime.utcnow().isoformat(),
         "size": os.path.getsize(filepath),
     }
-    log_message("info", f"New image received: {filename}")
+    # log_message("info", f"New image received: {filename}")
     return jsonify({"success": True, "image": latest_image})
 
 @app.route("/images/<path:filename>")
@@ -320,17 +318,17 @@ def video_feed():
 if __name__ == "__main__":
     # initial log & default status ------------------------------------------
     log_message("info", "Drone web application started")
-    drone_status.update(
-        {
-            "flight_mode": "STANDBY",
-            "gps": get_next_gps(),  # first GPS point
-        }
-    )
+    # drone_status.update(
+    #     {
+    #         "flight_mode": "STANDBY",
+    #         "gps": get_next_gps(),  # first GPS point
+    #     }
+    # )
 
     # run -------------------------------------------------------------------
     app.run(
         host="0.0.0.0",
         port=5000,
         threaded=True,
-        debug=False,
+        debug=True,
     )

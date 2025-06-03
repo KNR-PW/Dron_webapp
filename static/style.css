@@ -263,3 +263,19 @@ button:hover {
         grid-row: 3;
     }
 }
+.error-display {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #f44336; /* red */
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-weight: bold;
+    z-index: 1000;
+    transition: opacity 0.3s ease-in-out;
+}
+.error-display.hidden {
+    display: none;
+}

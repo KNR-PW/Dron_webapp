@@ -17,6 +17,19 @@ const imageSize = document.getElementById('image-size');
 const missionLog = document.getElementById('mission-log');
 const clearGallery = document.getElementById('clear-gallery');
 const clearLogBtn = document.getElementById('clear-log');
+const statusTable = document.getElementById('status-table'); // Fix for undefined
+
+// =================== ERROR DISPLAY ==========================
+function showError(message, duration = 5000) {
+    const errorBox = document.getElementById('error-display');
+    if (!errorBox) return;
+    errorBox.textContent = message;
+    errorBox.classList.remove('hidden');
+    setTimeout(() => {
+        errorBox.classList.add('hidden');
+    }, duration);
+}
+// ============================================================
 
 // =================== MISSION TIMER ==========================
 function formatMissionTime(seconds) {
@@ -38,7 +51,6 @@ function updateMissionTime() {
 }
 // ============================================================
 
-// Initialize the application
 function init() {
     setupEventListeners();
     connectWebSocket();
@@ -49,15 +61,12 @@ function init() {
     startMissionTimer();
 }
 
-// Set up event listeners
 function setupEventListeners() {
     clearLogBtn.addEventListener('click', clearLogs);
     clearGallery.addEventListener('click', clearGal);
 
-    // Handle window resize for image display
     window.addEventListener('resize', () => {
         if (droneImage.src && droneImage.src.includes('/images/')) {
-            // Force image refresh to handle responsive sizing
             const currentSrc = droneImage.src;
             droneImage.src = '';
             droneImage.src = currentSrc;
@@ -65,7 +74,6 @@ function setupEventListeners() {
     });
 }
 
-// WebSocket connection
 function connectWebSocket() {
     const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
     const host = window.location.host;
@@ -96,8 +104,10 @@ function connectWebSocket() {
         console.error('WebSocket error:', error);
         isConnected = false;
         updateConnectionStatus(false);
+        showError('WebSocket connection error');
     };
 }
+
 function attemptReconnect() {
     if (reconnectAttempts < maxReconnectAttempts) {
         reconnectAttempts++;
@@ -105,95 +115,67 @@ function attemptReconnect() {
         setTimeout(connectWebSocket, reconnectInterval);
     } else {
         console.error('Max reconnection attempts reached');
+        showError('Max reconnection attempts reached');
     }
 }
+
 function updateConnectionStatus(connected) {
-    // optional: show connection status if you want!
-    // Example: document.getElementById('connection-status').textContent = connected ? 'Connected' : 'Disconnected';
+    // Optional visual indicator
 }
 
-// Fetch initial data on page load
 function fetchInitialData() {
     fetch('/api/status')
         .then(response => response.json())
-        .then(data => {
-            updateStatusTable(data);
-        })
+        .then(data => updateStatusTable(data))
         .catch(error => {
             console.error('Error fetching initial status:', error);
             addLogEntry('error', `Failed to fetch initial status: ${error.message}`);
+            showError(`Failed to fetch status: ${error.message}`);
         });
 
     fetch('/api/log')
         .then(response => response.json())
-        .then(data => {
-            updateLogDisplay(data.logs);
-        })
+        .then(data => updateLogDisplay(data.logs))
         .catch(error => {
             console.error('Error fetching initial logs:', error);
             addLogEntry('error', `Failed to fetch initial logs: ${error.message}`);
+            showError(`Failed to fetch logs: ${error.message}`);
         });
 }
 
-// Process incoming data from WebSocket or API
 function processIncomingData(data) {
-    if (data.status) {
-        updateStatusTable(data.status);
-    }
-    if (data.image) {
-        updateImageDisplay(data.image);
-    }
-    if (data.logs) {
-        updateLogDisplay(data.logs);
-    }
-    if (data.log) {
-        addLogEntry(data.log.level, data.log.message);
-    }
+    if (data.status) updateStatusTable(data.status);
+    if (data.image) updateImageDisplay(data.image);
+    if (data.logs) updateLogDisplay(data.logs);
+    if (data.log) addLogEntry(data.log.level, data.log.message);
 }
 
-// Update status table (table is hardcoded in HTML, so we just update values)
 function updateStatusTable(status) {
     statusTable.innerHTML = '';
-
     for (const [key, value] of Object.entries(status)) {
         if (key === 'last_update') continue;
 
         const row = document.createElement('tr');
-
-        const paramCell = document.createElement('td');
-        paramCell.textContent = formatParameterName(key);
-        row.appendChild(paramCell);
-
-        const valueCell = document.createElement('td');
-        valueCell.textContent = formatParameterValue(key, value);
-        row.appendChild(valueCell);
-
-        const updateCell = document.createElement('td');
-        updateCell.textContent = formatTimestamp(status.last_update || new Date().toISOString());
-        row.appendChild(updateCell);
-
+        row.innerHTML = `
+            <td>${formatParameterName(key)}</td>
+            <td>${formatParameterValue(key, value)}</td>
+            <td>${formatTimestamp(status.last_update || new Date().toISOString())}</td>
+        `;
         statusTable.appendChild(row);
     }
 }
 
 function formatParameterName(name) {
-    return name.split('_').map(word =>
-        word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+    return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
 function formatParameterValue(key, value) {
     switch (key) {
-        case 'altitude':
-            return `${value.toFixed(2)} m`;
-        case 'speed':
-            return `${value.toFixed(1)} m/s`;
-        case 'battery_percent':
-            return `${value}%`;
-        case 'battery_voltage':
-            return `${value}V`;
-        default:
-            return value;
+        case 'altitude': return `${value.toFixed(2)} m`;
+        case 'speed': return `${value.toFixed(1)} m/s`;
+        case 'battery_percent': return `${value}%`;
+        case 'battery_voltage': return `${value}V`;
+        default: return value;
     }
 }
 
@@ -202,18 +184,22 @@ function formatTimestamp(timestamp) {
     return date.toLocaleTimeString();
 }
 
-// Update image display
 function updateImageDisplay(imageData) {
-    if (imageData.filename) {
-        droneImage.src = `/images/${imageData.filename}`;
-        imageTimestamp.textContent = formatTimestamp(imageData.timestamp);
-        imageSize.textContent = formatFileSize(imageData.size);
-    } else if (typeof imageData === 'string') {
-        droneImage.src = imageData;
-        imageTimestamp.textContent = new Date().toLocaleTimeString();
-        imageSize.textContent = 'Unknown size';
+    try {
+        if (imageData.filename) {
+            droneImage.src = `/images/${imageData.filename}`;
+            imageTimestamp.textContent = formatTimestamp(imageData.timestamp);
+            imageSize.textContent = formatFileSize(imageData.size);
+        } else if (typeof imageData === 'string') {
+            droneImage.src = imageData;
+            imageTimestamp.textContent = new Date().toLocaleTimeString();
+            imageSize.textContent = 'Unknown size';
+        }
+    } catch (error) {
+        showError('Error updating image display');
     }
 }
+
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -222,37 +208,37 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// Log handling
 function fetchLogs() {
     fetch('/api/log')
         .then(response => response.json())
-        .then(data => {
-            updateLogDisplay(data.logs);
-        })
+        .then(data => updateLogDisplay(data.logs))
         .catch(error => {
             console.error('Error fetching logs:', error);
             addLogEntry('error', `Failed to refresh logs: ${error.message}`);
+            showError(`Failed to refresh logs: ${error.message}`);
         });
 }
-setInterval(fetchLogs, 5000);
+setInterval(fetchLogs, 1500);
 
 function clearLogs() {
     if (confirm('Are you sure you want to clear the mission log?')) {
         fetch('/api/log', { method: 'DELETE' })
-        .then(response => {
-            if (response.ok) {
-                missionLog.innerHTML = '';
-                addLogEntry('info', 'Mission log cleared');
-            }
-        })
-        .catch(error => {
-            console.error('Error clearing logs:', error);
-            addLogEntry('error', `Failed to clear logs: ${error.message}`);
-        });
+            .then(response => {
+                if (response.ok) {
+                    missionLog.innerHTML = '';
+                    addLogEntry('info', 'Mission log cleared');
+                }
+            })
+            .catch(error => {
+                console.error('Error clearing logs:', error);
+                addLogEntry('error', `Failed to clear logs: ${error.message}`);
+                showError(`Failed to clear logs: ${error.message}`);
+            });
     }
 }
+
 function clearGal() {
-    if (confirm('Are you sure you want to clear the gallery?')){
+    if (confirm('Are you sure you want to clear the gallery?')) {
         fetch('/api/images', { method: 'DELETE' })
             .then(response => {
                 if (response.ok) {
@@ -267,15 +253,14 @@ function clearGal() {
             .catch(error => {
                 console.error('Error clearing gallery:', error);
                 addLogEntry('error', `Failed to clear gallery: ${error.message}`);
+                showError(`Failed to clear gallery: ${error.message}`);
             });
     }
 }
 
 function updateLogDisplay(logs) {
     missionLog.innerHTML = '';
-    logs.forEach(log => {
-        addLogEntry(log.level, log.message, log.timestamp);
-    });
+    logs.forEach(log => addLogEntry(log.level, log.message, log.timestamp));
 }
 
 function addLogEntry(level, message, timestamp) {
@@ -292,17 +277,17 @@ function addLogEntry(level, message, timestamp) {
     missionLog.appendChild(logEntry);
     missionLog.scrollTop = missionLog.scrollHeight;
 }
+
 function updateFlightStatusIndicator(flightMode) {
     const indicator = document.getElementById('flight-status-indicator');
     if (!indicator) return;
     if (flightMode === "INIT") {
-        indicator.classList.remove('active'); // Czerwony
+        indicator.classList.remove('active');
     } else {
-        indicator.classList.add('active'); // Zielony
+        indicator.classList.add('active');
     }
 }
 
-// Funkcja do aktualizacji statusu drona
 function updateDroneStatus() {
     fetch('/api/status')
         .then(response => response.json())
@@ -312,8 +297,6 @@ function updateDroneStatus() {
             document.getElementById('battery_percent').innerText = `${data.battery_percent}%`;
             document.getElementById('gps_relative').innerText = data.gps_relative;
             document.getElementById('gps_global').innerText = data.gps_global;
-            // document.getElementById('mission_time').innerText = data.mission_time;
-            // Mission time is now handled by frontend JS timer!
             document.getElementById('flight_mode').innerText = data.flight_mode;
             document.getElementById('battery_voltage').innerText = `${data.battery_voltage}V`;
             document.getElementById('last_update').innerText = data.last_update;
@@ -321,31 +304,29 @@ function updateDroneStatus() {
         })
         .catch(error => {
             console.error('Error fetching drone status:', error);
+            showError('Failed to update drone status');
         });
 }
-// Wywołanie funkcji co 2 sekundy
-setInterval(updateDroneStatus, 2000);
+setInterval(updateDroneStatus, 800);
 
 function updateImagePanel() {
     fetch('/api/status')
         .then(response => response.json())
         .then(data => {
             if (data.latest_image) {
-                const imageElement = document.getElementById('drone-image');
-                const timestampElement = document.getElementById('image-timestamp');
-                const sizeElement = document.getElementById('image-size');
-                imageElement.src = `/images/${data.latest_image.filename}`;
-                imageElement.alt = 'Drone Image';
-                timestampElement.textContent = `Uploaded: ${new Date(data.latest_image.timestamp).toLocaleString()}`;
-                sizeElement.textContent = `Size: ${(data.latest_image.size / 1024).toFixed(2)} KB`;
+                droneImage.src = `/images/${data.latest_image.filename}`;
+                imageTimestamp.textContent = `Uploaded: ${new Date(data.latest_image.timestamp).toLocaleString()}`;
+                imageSize.textContent = `Size: ${(data.latest_image.size / 1024).toFixed(2)} KB`;
             }
         })
-        .catch(error => console.error('Error updating image panel:', error));
+        .catch(error => {
+            console.error('Error updating image panel:', error);
+            showError('Failed to update image panel');
+        });
 }
-setInterval(updateImagePanel, 10000);
-setInterval(loadGallery, 10000);
+setInterval(updateImagePanel, 6000);
+setInterval(loadGallery, 6000);
 
-// Galeria zdjęć
 function loadGallery() {
     fetch('/api/images')
         .then(response => response.json())
@@ -358,37 +339,27 @@ function loadGallery() {
                 img.className = 'thumbnail';
                 img.alt = filename;
                 img.addEventListener('click', () => {
-                    const mainImage = document.getElementById('drone-image');
-                    const timestampElement = document.getElementById('image-timestamp');
-                    const sizeElement = document.getElementById('image-size');
-                    mainImage.src = `/images/${filename}`;
+                    droneImage.src = `/images/${filename}`;
                     manualImageSelected = true;
                     fetch(`/images/${filename}`, { method: 'HEAD' })
                         .then(response => {
                             const size = response.headers.get('content-length');
                             const lastModified = response.headers.get('last-modified');
-                            if (lastModified) {
-                                const uploadedDate = new Date(lastModified);
-                                timestampElement.textContent = `Uploaded: ${uploadedDate.toLocaleString()}`;
-                            } else {
-                                timestampElement.textContent = `Uploaded: Unknown`;
-                            }
-                            if (size) {
-                                sizeElement.textContent = `Size: ${(size / 1024).toFixed(2)} KB`;
-                            } else {
-                                sizeElement.textContent = `Size: Unknown`;
-                            }
+                            imageTimestamp.textContent = lastModified ? `Uploaded: ${new Date(lastModified).toLocaleString()}` : 'Uploaded: Unknown';
+                            imageSize.textContent = size ? `Size: ${(size / 1024).toFixed(2)} KB` : 'Size: Unknown';
                         })
                         .catch(error => {
                             console.error('Error fetching image metadata:', error);
+                            showError('Failed to fetch image metadata');
                         });
                 });
                 gallery.appendChild(img);
             });
         })
-        .catch(error => console.error('Error loading gallery:', error));
+        .catch(error => {
+            console.error('Error loading gallery:', error);
+            showError('Failed to load image gallery');
+        });
 }
 
-// Start the application
 document.addEventListener('DOMContentLoaded', init);
-setInterval(updateMissionTime, 1000);

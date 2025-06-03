@@ -22,7 +22,7 @@
                 <table>
                     <tr><th>Height</th>        <td id="altitude">0.0</td></tr>
                     <tr><th>Speed</th>         <td id="speed">0.0</td></tr>
-                    <tr><th>Battery percent</th>       <td id="battery">100%</td></tr>
+                    <tr><th>Battery percent</th>       <td id="battery_percent">100%</td></tr>
                     <tr><th>Battery voltage</th>   <td id="battery_voltage">0V</td></tr>
                     <tr><th>GPS GLOBAL</th>           <td id="gps_global">0.0,0.0</td></tr>
                     <tr><th>GPS RELATIVE</th>           <td id="gps_relative">0.0,0.0</td></tr>
@@ -134,5 +134,7 @@
 
     <!-- Google Maps JS SDK (async) -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script>
+    <div id="error-display" class="error-display hidden"></div>
+
 </body>
 </html>
