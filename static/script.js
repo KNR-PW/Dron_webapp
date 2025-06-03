@@ -202,12 +202,10 @@ function formatParameterValue(key, value) {
             return `${value.toFixed(2)} m`;
         case 'speed':
             return `${value.toFixed(1)} m/s`;
-        case 'battery':
+        case 'battery_percent':
             return `${value}%`;
-        case 'temperature':
-            return `${value}°C`;
-        case 'signal_strength':
-            return `${value} dBm`;
+        case 'battery_voltage':
+            return `${value}V`;
         default:
             return value;
     }
@@ -339,13 +337,13 @@ function updateDroneStatus() {
         .then(data => {
             document.getElementById('altitude').innerText = data.altitude.toFixed(2);
             document.getElementById('speed').innerText = data.speed.toFixed(1);
-            document.getElementById('battery').innerText = `${data.battery}%`;
-            document.getElementById('gps').innerText = data.gps;
-            document.getElementById('signal_strength').innerText = `${data.signal_strength} dBm`;
+            document.getElementById('battery_percent').innerText = `${data.battery_percent}%`;
+            document.getElementById('gps_relative').innerText = data.gps_relative;
+            document.getElementById('gps_global').innerText = data.gps_global;
             // document.getElementById('mission_time').innerText = data.mission_time;
             // Mission time is now handled by frontend JS timer!
             document.getElementById('flight_mode').innerText = data.flight_mode;
-            document.getElementById('temperature').innerText = `${data.temperature}°C`;
+            document.getElementById('battery_voltage').innerText = `${data.battery_voltage}V`;
             document.getElementById('last_update').innerText = data.last_update;
 
             // ➡️ Dodajemy to tu:

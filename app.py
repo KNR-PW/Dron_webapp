@@ -61,12 +61,12 @@ logging.basicConfig(
 drone_status = {
     "altitude": 0.0,
     "speed": 0.0,
-    "battery": 100,
-    "gps": "0.0,0.0",
-    "signal_strength": -50,
+    "battery_percent": 100,
+    "battery_voltage": 0,
+    "gps_global": "0.0,0.0",
+    "gps_relative": "0.0,0.0",
     "mission_time": "00:00:00",
     "flight_mode": "INIT",
-    "temperature": 25.0,
     "last_update": datetime.utcnow().isoformat(),
 }
 
@@ -141,6 +141,8 @@ def handle_status():
     if request.method == "POST":
         new_data = request.get_json(silent=True)
         if new_data:
+            drone_status.update(new_data)
+            drone_status["last_update"] = datetime.utcnow().isoformat()
             drone_status.update(new_data)
             drone_status["last_update"] = datetime.utcnow().isoformat()
             log_message("info", f"Status updated: {new_data}")
@@ -306,5 +308,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=5000,
         threaded=True,
-        debug=False,  # set to True only for local dev
+        debug=True,  # set to True only for local dev
     )
