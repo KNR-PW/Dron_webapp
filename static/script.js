@@ -11,13 +11,10 @@ let missionStartTime = null;
 let missionTimerInterval = null;
 
 // DOM elements
-const statusTable = document.querySelector('#status-table tbody');
 const droneImage = document.getElementById('drone-image');
 const imageTimestamp = document.getElementById('image-timestamp');
 const imageSize = document.getElementById('image-size');
 const missionLog = document.getElementById('mission-log');
-const connectionStatus = document.getElementById('connection-status');
-
 const clearGallery = document.getElementById('clear-gallery');
 const clearLogBtn = document.getElementById('clear-log');
 
@@ -28,16 +25,12 @@ function formatMissionTime(seconds) {
     const s = String(seconds % 60).padStart(2, '0');
     return `${h}:${m}:${s}`;
 }
-
-// Start mission timer (called on page load)
 function startMissionTimer() {
     if (missionTimerInterval) clearInterval(missionTimerInterval);
     missionStartTime = Date.now();
-    updateMissionTime(); // od razu ustaw 00:00:00
-
+    updateMissionTime();
     missionTimerInterval = setInterval(updateMissionTime, 1000);
 }
-
 function updateMissionTime() {
     if (!missionStartTime) return;
     const elapsed = Math.floor((Date.now() - missionStartTime) / 1000);
@@ -53,13 +46,11 @@ function init() {
     updateDroneStatus();
     updateImagePanel();
     loadGallery();
-    restartVideo();
-    startMissionTimer(); // Start the mission timer on page load
+    startMissionTimer();
 }
 
 // Set up event listeners
 function setupEventListeners() {
-
     clearLogBtn.addEventListener('click', clearLogs);
     clearGallery.addEventListener('click', clearGal);
 
@@ -107,7 +98,6 @@ function connectWebSocket() {
         updateConnectionStatus(false);
     };
 }
-
 function attemptReconnect() {
     if (reconnectAttempts < maxReconnectAttempts) {
         reconnectAttempts++;
@@ -117,10 +107,9 @@ function attemptReconnect() {
         console.error('Max reconnection attempts reached');
     }
 }
-
 function updateConnectionStatus(connected) {
-    connectionStatus.textContent = connected ? 'Connected' : 'Disconnected';
-    connectionStatus.className = connected ? 'connection-status connected' : 'connection-status';
+    // optional: show connection status if you want!
+    // Example: document.getElementById('connection-status').textContent = connected ? 'Connected' : 'Disconnected';
 }
 
 // Fetch initial data on page load
@@ -151,21 +140,18 @@ function processIncomingData(data) {
     if (data.status) {
         updateStatusTable(data.status);
     }
-
     if (data.image) {
         updateImageDisplay(data.image);
     }
-
     if (data.logs) {
         updateLogDisplay(data.logs);
     }
-
     if (data.log) {
         addLogEntry(data.log.level, data.log.message);
     }
 }
 
-// Update status table
+// Update status table (table is hardcoded in HTML, so we just update values)
 function updateStatusTable(status) {
     statusTable.innerHTML = '';
 
@@ -223,13 +209,11 @@ function updateImageDisplay(imageData) {
         imageTimestamp.textContent = formatTimestamp(imageData.timestamp);
         imageSize.textContent = formatFileSize(imageData.size);
     } else if (typeof imageData === 'string') {
-        // Handle base64 images
         droneImage.src = imageData;
         imageTimestamp.textContent = new Date().toLocaleTimeString();
         imageSize.textContent = 'Unknown size';
     }
 }
-
 function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -244,21 +228,17 @@ function fetchLogs() {
         .then(response => response.json())
         .then(data => {
             updateLogDisplay(data.logs);
-            // addLogEntry('info', 'Logs refreshed');
         })
         .catch(error => {
             console.error('Error fetching logs:', error);
             addLogEntry('error', `Failed to refresh logs: ${error.message}`);
         });
 }
-
-setInterval(fetchLogs, 5000); // Fetch logs every 5 seconds
+setInterval(fetchLogs, 5000);
 
 function clearLogs() {
     if (confirm('Are you sure you want to clear the mission log?')) {
-        fetch('/api/log', {
-            method: 'DELETE'
-        })
+        fetch('/api/log', { method: 'DELETE' })
         .then(response => {
             if (response.ok) {
                 missionLog.innerHTML = '';
@@ -271,22 +251,19 @@ function clearLogs() {
         });
     }
 }
-
 function clearGal() {
     if (confirm('Are you sure you want to clear the gallery?')){
-        fetch('/api/images',{
-            method: 'DELETE'
-        })
+        fetch('/api/images', { method: 'DELETE' })
             .then(response => {
                 if (response.ok) {
                     addLogEntry('info', 'Gallery cleared');
-                    loadGallery()
-                } else{
+                    loadGallery();
+                } else {
                     return response.json().then(data => {
                         throw new Error(data.message || 'Failed to clear gallery');
                     });
                 }
-        })
+            })
             .catch(error => {
                 console.error('Error clearing gallery:', error);
                 addLogEntry('error', `Failed to clear gallery: ${error.message}`);
@@ -304,25 +281,20 @@ function updateLogDisplay(logs) {
 function addLogEntry(level, message, timestamp) {
     const logEntry = document.createElement('div');
     logEntry.className = `log-entry log-${level}`;
-
     const timeElement = document.createElement('span');
     timeElement.className = 'log-timestamp';
     timeElement.textContent = `[${timestamp ? formatTimestamp(timestamp) : new Date().toLocaleTimeString()}]`;
-
     const msgElement = document.createElement('span');
     msgElement.className = `log-${level}`;
     msgElement.textContent = message;
-
     logEntry.appendChild(timeElement);
     logEntry.appendChild(msgElement);
-
     missionLog.appendChild(logEntry);
     missionLog.scrollTop = missionLog.scrollHeight;
 }
 function updateFlightStatusIndicator(flightMode) {
     const indicator = document.getElementById('flight-status-indicator');
     if (!indicator) return;
-
     if (flightMode === "INIT") {
         indicator.classList.remove('active'); // Czerwony
     } else {
@@ -345,21 +317,16 @@ function updateDroneStatus() {
             document.getElementById('flight_mode').innerText = data.flight_mode;
             document.getElementById('battery_voltage').innerText = `${data.battery_voltage}V`;
             document.getElementById('last_update').innerText = data.last_update;
-
-            // ➡️ Dodajemy to tu:
             updateFlightStatusIndicator(data.flight_mode);
         })
         .catch(error => {
             console.error('Error fetching drone status:', error);
         });
 }
-
 // Wywołanie funkcji co 2 sekundy
 setInterval(updateDroneStatus, 2000);
 
 function updateImagePanel() {
-    //if (manualImageSelected) return; // 👈 Jeśli wybrane ręcznie, nie aktualizuj!
-
     fetch('/api/status')
         .then(response => response.json())
         .then(data => {
@@ -367,7 +334,6 @@ function updateImagePanel() {
                 const imageElement = document.getElementById('drone-image');
                 const timestampElement = document.getElementById('image-timestamp');
                 const sizeElement = document.getElementById('image-size');
-
                 imageElement.src = `/images/${data.latest_image.filename}`;
                 imageElement.alt = 'Drone Image';
                 timestampElement.textContent = `Uploaded: ${new Date(data.latest_image.timestamp).toLocaleString()}`;
@@ -376,46 +342,37 @@ function updateImagePanel() {
         })
         .catch(error => console.error('Error updating image panel:', error));
 }
-
-// Call this function periodically or after an image upload
 setInterval(updateImagePanel, 10000);
-setInterval(loadGallery, 10000);   //USTAWIENIA CZASU WYSWIETLANIA ZDJECIA Z GALERII
+setInterval(loadGallery, 10000);
 
+// Galeria zdjęć
 function loadGallery() {
     fetch('/api/images')
         .then(response => response.json())
         .then(data => {
             const gallery = document.getElementById('gallery-container');
-            gallery.innerHTML = ''; // Wyczyść stare miniaturki
-
+            gallery.innerHTML = '';
             data.images.forEach(filename => {
                 const img = document.createElement('img');
                 img.src = `/images/${filename}`;
                 img.className = 'thumbnail';
                 img.alt = filename;
-
-                // Kliknięcie zmienia duży obrazek
                 img.addEventListener('click', () => {
                     const mainImage = document.getElementById('drone-image');
                     const timestampElement = document.getElementById('image-timestamp');
                     const sizeElement = document.getElementById('image-size');
-
                     mainImage.src = `/images/${filename}`;
-                    manualImageSelected = true; // <- Użytkownik kliknął ręcznie!
-
-                    // Pobierz metadane z prawidłowej ścieżki
+                    manualImageSelected = true;
                     fetch(`/images/${filename}`, { method: 'HEAD' })
                         .then(response => {
                             const size = response.headers.get('content-length');
                             const lastModified = response.headers.get('last-modified');
-
                             if (lastModified) {
                                 const uploadedDate = new Date(lastModified);
                                 timestampElement.textContent = `Uploaded: ${uploadedDate.toLocaleString()}`;
                             } else {
                                 timestampElement.textContent = `Uploaded: Unknown`;
                             }
-
                             if (size) {
                                 sizeElement.textContent = `Size: ${(size / 1024).toFixed(2)} KB`;
                             } else {
@@ -432,80 +389,6 @@ function loadGallery() {
         .catch(error => console.error('Error loading gallery:', error));
 }
 
-// Inicjalizacja po stronie klienta WebRTC
-let peerConnection = null;
-const videoElement = document.getElementById('drone-camera-view');
-// Konfiguracja STUN
-const config = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' }
-  ]
-};
-function startCameraView() {
-    peerConnection = new RTCPeerConnection(config);
-
-    peerConnection.ontrack = function(event) {
-        // Przyjmujemy strumień video (jeden track = video z drona)
-        videoElement.srcObject = event.streams[0];
-    };
-
-    // Komunikacja sygnalizacyjna przez WebSocket/REST/API
-    // To wymaga podpięcia do backendu, który pośredniczy między klientami
-    socket.onmessage = (event) => {
-        let data = JSON.parse(event.data);
-        if (data.webrtc_offer) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(data.webrtc_offer))
-                .then(() => peerConnection.createAnswer())
-                .then(answer => peerConnection.setLocalDescription(answer))
-                .then(() => {
-                    // Wysyłka odpowiedzi SDP do serwera
-                    socket.send(JSON.stringify({webrtc_answer: peerConnection.localDescription}));
-                });
-        }
-        if (data.ice_candidate) {
-            peerConnection.addIceCandidate(new RTCIceCandidate(data.ice_candidate));
-        }
-    };
-    // Wysyłanie własnych kandydatów
-    peerConnection.onicecandidate = function(event) {
-        if (event.candidate) {
-            socket.send(JSON.stringify({ice_candidate: event.candidate}));
-        }
-    };
-}
-
-// Wywołaj funkcję, gdy strona się załaduje lub gdy użytkownik zechce podgląd
-// window.addEventListener('DOMContentLoaded', startCameraView);
-
 // Start the application
 document.addEventListener('DOMContentLoaded', init);
-const videoEl = document.getElementById('drone-camera-view');
-function restartVideo() {
-  videoEl.currentTime = 0;
-  videoEl.play();
-}
-function startWebcamTest() {
-    const video = document.getElementById('drone-camera-view');
-    // Zapytanie o dostęp do kamerki i mikrofonu (tylko kamerka, jeśli 'video:true, audio:false')
-    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        .then(stream => {
-            video.srcObject = stream;
-        })
-        .catch(error => {
-            alert('Błąd podczas uruchamiania kamery: ' + error);
-        });
-}
-
-document.getElementById('test-webcam-btn').addEventListener('click', () => {
-    startWebcamTest();
-});
-
-document.getElementById('connect-drone-btn').addEventListener('click', () => {
-    startCameraView();
-});
-
-// Wywołaj funkcję automatycznie po załadowaniu strony lub z przycisku testowego
-//window.addEventListener('DOMContentLoaded', startWebcamTest);
-
-// Aktualizuj licznik misji co sekundę
 setInterval(updateMissionTime, 1000);
