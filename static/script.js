@@ -17,7 +17,6 @@ const imageSize = document.getElementById('image-size');
 const missionLog = document.getElementById('mission-log');
 const clearGallery = document.getElementById('clear-gallery');
 const clearLogBtn = document.getElementById('clear-log');
-const statusTable = document.getElementById('status-table'); // Fix for undefined
 
 // =================== ERROR DISPLAY ==========================
 function showError(message, duration = 5000) {
@@ -126,7 +125,7 @@ function updateConnectionStatus(connected) {
 function fetchInitialData() {
     fetch('/api/status')
         .then(response => response.json())
-        .then(data => updateStatusTable(data))
+        .then(data => updateDroneStatus(data))
         .catch(error => {
             console.error('Error fetching initial status:', error);
             addLogEntry('error', `Failed to fetch initial status: ${error.message}`);
@@ -144,138 +143,10 @@ function fetchInitialData() {
 }
 
 function processIncomingData(data) {
-    if (data.status) updateStatusTable(data.status);
+    if (data.status) updateDroneStatus(data.status);
     if (data.image) updateImageDisplay(data.image);
     if (data.logs) updateLogDisplay(data.logs);
     if (data.log) addLogEntry(data.log.level, data.log.message);
-}
-
-function updateStatusTable(status) {
-    statusTable.innerHTML = '';
-    for (const [key, value] of Object.entries(status)) {
-        if (key === 'last_update') continue;
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${formatParameterName(key)}</td>
-            <td>${formatParameterValue(key, value)}</td>
-            <td>${formatTimestamp(status.last_update || new Date().toISOString())}</td>
-        `;
-        statusTable.appendChild(row);
-    }
-}
-
-function formatParameterName(name) {
-    return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-}
-
-function formatParameterValue(key, value) {
-    switch (key) {
-        case 'altitude': return `${value.toFixed(2)} m`;
-        case 'speed': return `${value.toFixed(1)} m/s`;
-        case 'battery_percent': return `${value}%`;
-        case 'battery_voltage': return `${value}V`;
-        default: return value;
-    }
-}
-
-function formatTimestamp(timestamp) {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString();
-}
-
-function updateImageDisplay(imageData) {
-    try {
-        if (imageData.filename) {
-            droneImage.src = `/images/${imageData.filename}`;
-            imageTimestamp.textContent = formatTimestamp(imageData.timestamp);
-            imageSize.textContent = formatFileSize(imageData.size);
-        } else if (typeof imageData === 'string') {
-            droneImage.src = imageData;
-            imageTimestamp.textContent = new Date().toLocaleTimeString();
-            imageSize.textContent = 'Unknown size';
-        }
-    } catch (error) {
-        showError('Error updating image display');
-    }
-}
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function fetchLogs() {
-    fetch('/api/log')
-        .then(response => response.json())
-        .then(data => updateLogDisplay(data.logs))
-        .catch(error => {
-            console.error('Error fetching logs:', error);
-            addLogEntry('error', `Failed to refresh logs: ${error.message}`);
-            showError(`Failed to refresh logs: ${error.message}`);
-        });
-}
-setInterval(fetchLogs, 1500);
-
-function clearLogs() {
-    if (confirm('Are you sure you want to clear the mission log?')) {
-        fetch('/api/log', { method: 'DELETE' })
-            .then(response => {
-                if (response.ok) {
-                    missionLog.innerHTML = '';
-                    addLogEntry('info', 'Mission log cleared');
-                }
-            })
-            .catch(error => {
-                console.error('Error clearing logs:', error);
-                addLogEntry('error', `Failed to clear logs: ${error.message}`);
-                showError(`Failed to clear logs: ${error.message}`);
-            });
-    }
-}
-
-function clearGal() {
-    if (confirm('Are you sure you want to clear the gallery?')) {
-        fetch('/api/images', { method: 'DELETE' })
-            .then(response => {
-                if (response.ok) {
-                    addLogEntry('info', 'Gallery cleared');
-                    loadGallery();
-                } else {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Failed to clear gallery');
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error clearing gallery:', error);
-                addLogEntry('error', `Failed to clear gallery: ${error.message}`);
-                showError(`Failed to clear gallery: ${error.message}`);
-            });
-    }
-}
-
-function updateLogDisplay(logs) {
-    missionLog.innerHTML = '';
-    logs.forEach(log => addLogEntry(log.level, log.message, log.timestamp));
-}
-
-function addLogEntry(level, message, timestamp) {
-    const logEntry = document.createElement('div');
-    logEntry.className = `log-entry log-${level}`;
-    const timeElement = document.createElement('span');
-    timeElement.className = 'log-timestamp';
-    timeElement.textContent = `[${timestamp ? formatTimestamp(timestamp) : new Date().toLocaleTimeString()}]`;
-    const msgElement = document.createElement('span');
-    msgElement.className = `log-${level}`;
-    msgElement.textContent = message;
-    logEntry.appendChild(timeElement);
-    logEntry.appendChild(msgElement);
-    missionLog.appendChild(logEntry);
-    missionLog.scrollTop = missionLog.scrollHeight;
 }
 
 function updateFlightStatusIndicator(flightMode) {
@@ -288,26 +159,30 @@ function updateFlightStatusIndicator(flightMode) {
     }
 }
 
-function updateDroneStatus() {
-    fetch('/api/status')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('altitude').innerText = data.altitude.toFixed(2);
-            document.getElementById('speed').innerText = data.speed.toFixed(1);
-            document.getElementById('battery_percent').innerText = `${data.battery_percent}%`;
-            document.getElementById('gps_relative').innerText = data.gps_relative;
-            document.getElementById('gps_global').innerText = data.gps_global;
-            document.getElementById('flight_mode').innerText = data.flight_mode;
-            document.getElementById('battery_voltage').innerText = `${data.battery_voltage}V`;
-            document.getElementById('last_update').innerText = data.last_update;
-            updateFlightStatusIndicator(data.flight_mode);
-        })
-        .catch(error => {
-            console.error('Error fetching drone status:', error);
-            showError('Failed to update drone status');
-        });
+function updateDroneStatus(status) {
+    // If status is not provided, fetch from API
+    if (!status) {
+        fetch('/api/status')
+            .then(response => response.json())
+            .then(data => updateDroneStatus(data))
+            .catch(error => {
+                console.error('Error fetching drone status:', error);
+                showError('Failed to update drone status');
+            });
+        return;
+    }
+    document.getElementById('altitude').innerText = Number(status.altitude).toFixed(2);
+    document.getElementById('speed').innerText = Number(status.speed).toFixed(1);
+    document.getElementById('battery_percent').innerText = `${status.battery_percent}%`;
+    document.getElementById('gps_relative').innerText = status.gps_relative;
+    document.getElementById('gps_global').innerText = status.gps_global;
+    document.getElementById('flight_mode').innerText = status.flight_mode;
+    document.getElementById('battery_voltage').innerText = `${status.battery_voltage}V`;
+    document.getElementById('last_update').innerText = status.last_update;
+    updateFlightStatusIndicator(status.flight_mode);
 }
-setInterval(updateDroneStatus, 800);
+
+setInterval(() => updateDroneStatus(), 800);
 
 function updateImagePanel() {
     fetch('/api/status')

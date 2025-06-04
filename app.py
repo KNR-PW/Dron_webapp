@@ -118,18 +118,6 @@ def handle_status():
     })
 
 # ---------------------------------------------------------------------------
-# Next‑GPS endpoint  (used by Google Maps JS)
-# ---------------------------------------------------------------------------
-
-@app.route("/api/next_gps")
-def api_next_gps():
-    """Return next GPS coordinate from the predefined list."""
-    point = get_next_gps()  # e.g. "52.23,21.01"
-    drone_status["gps_global"] = point
-    drone_status["last_update"] = datetime.utcnow().isoformat()
-    return jsonify({"gps": point})
-
-# ---------------------------------------------------------------------------
 # Image uploads                                                               #
 # ---------------------------------------------------------------------------
 
@@ -283,12 +271,7 @@ def video_feed():
 if __name__ == "__main__":
     # initial log & default status ------------------------------------------
     log_message("info", "Drone web application started")
-    # drone_status.update(
-    #     {
-    #         "flight_mode": "STANDBY",
-    #         "gps": get_next_gps(),  # first GPS point
-    #     }
-    # )
+
 
     # run -------------------------------------------------------------------
     app.run(
