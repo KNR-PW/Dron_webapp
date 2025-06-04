@@ -29,20 +29,9 @@ app.config.update(
     UPLOAD_FOLDER="data/images",
     LOG_FILE="data/mission.log",
     SECRET_KEY="your-secret-key-here",  # TODO: change in production
-    GPS_POINTS_FILE="data/gps_points.txt",
 )
 
-# ---- Google Maps API key ----------------------------------------------------
-def load_api_key():
-    for name in ["kluczapi", "kluczapi.txt"]:
-        path = pathlib.Path(name)
-        if path.exists():
-            key = path.read_text(encoding="utf-8").strip()
-            if key:
-                return key
-    raise RuntimeError("📍 Plik 'kluczapi' lub 'kluczapi.txt' musi istnieć i zawierać poprawny klucz Google Maps!")
 
-app.config["GOOGLE_MAPS_KEY"] = load_api_key()
 # ---- Ensure runtime directories exist --------------------------------------
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 os.makedirs(os.path.dirname(app.config["LOG_FILE"]), exist_ok=True)
@@ -91,29 +80,6 @@ def log_message(level: str, message: str) -> None:
     if len(mission_log) > 1000:
         mission_log.pop(0)
 
-# ---- GPS point cycling ------------------------------------------------------
-
-def _build_gps_cycle(path: str) -> cycle:
-    """Return an itertools.cycle generator over lat,lon lines in *path*."""
-    if not os.path.exists(path):
-        logging.warning("GPS points file '%s' not found – creating an empty one", path)
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write("52.2297,21.0122\n")  # Warsaw as default
-
-    with open(path, "r", encoding="utf-8") as f:
-        points = [ln.strip() for ln in f if ln.strip()]
-
-    if not points:
-        # Ensure at least one point to avoid StopIteration later on
-        points = ["52.2297,21.0122"]
-
-    return cycle(points)
-
-_gps_cycle = _build_gps_cycle(app.config["GPS_POINTS_FILE"])
-
-def get_next_gps() -> str:
-    return next(_gps_cycle)
 
 ###############################################################################
 # Routes — Dashboard & API                                                    #
@@ -127,7 +93,6 @@ def dashboard():
         status=drone_status,
         latest_image=latest_image,
         logs=mission_log[-100:],  # last 100 log entries
-        google_maps_key=app.config["GOOGLE_MAPS_KEY"],
     )
 
 # ---------------------------------------------------------------------------

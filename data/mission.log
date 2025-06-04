@@ -4303,3 +4303,34 @@
 2025-06-04 00:36:16,493 — INFO —  * Debugger PIN: 132-329-555
 2025-06-04 00:36:18,131 — INFO — 127.0.0.1 - - [04/Jun/2025 00:36:18] "GET /api/status HTTP/1.1" 200 -
 2025-06-04 00:36:21,442 — INFO — 127.0.0.1 - - [04/Jun/2025 00:36:21] "GET /api/status HTTP/1.1" 200 -
+2025-06-04 13:05:21,525 — INFO — Drone web application started
+2025-06-04 13:05:21,585 — INFO — [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.221.49:5000
+2025-06-04 13:05:21,585 — INFO — [33mPress CTRL+C to quit[0m
+2025-06-04 13:05:21,586 — INFO —  * Restarting with stat
+2025-06-04 13:05:22,397 — INFO — Drone web application started
+2025-06-04 13:05:22,413 — WARNING —  * Debugger is active!
+2025-06-04 13:05:22,558 — INFO —  * Debugger PIN: 104-745-259
+2025-06-04 13:05:29,199 — INFO — Drone web application started
+2025-06-04 13:05:29,221 — INFO — [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.221.49:5000
+2025-06-04 13:05:29,222 — INFO — [33mPress CTRL+C to quit[0m
+2025-06-04 13:05:29,222 — INFO —  * Restarting with stat
+2025-06-04 13:05:30,060 — INFO — Drone web application started
+2025-06-04 13:05:30,076 — WARNING —  * Debugger is active!
+2025-06-04 13:05:30,077 — INFO —  * Debugger PIN: 104-745-259
+2025-06-04 13:05:34,162 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:34] "GET / HTTP/1.1" 200 -
+2025-06-04 13:05:34,210 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:34] "[33mGET /static/placeholder.jpg HTTP/1.1[0m" 404 -
+2025-06-04 13:05:34,227 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:34] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-04 13:05:35,045 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:35] "GET /video_feed HTTP/1.1" 200 -
+2025-06-04 13:05:35,160 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-06-04 13:05:39,246 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:39] "GET / HTTP/1.1" 200 -
+2025-06-04 13:05:39,268 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:39] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-04 13:05:39,269 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:39] "[33mGET /static/placeholder.jpg HTTP/1.1[0m" 404 -
+2025-06-04 13:05:39,924 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:39] "GET /video_feed HTTP/1.1" 200 -
+2025-06-04 13:05:42,465 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:42] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-06-04 13:05:42,522 — INFO — 127.0.0.1 - - [04/Jun/2025 13:05:42] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -

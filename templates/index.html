@@ -13,6 +13,7 @@
             <div class="flight-status">
                 <span id="flight-status-indicator" class="indicator"></span> Drone Status
             </div>
+
         </header>
 
         <div class="dashboard">
@@ -36,7 +37,7 @@
             <section class="image-panel">
                 <h2>Latest Image</h2>
                 <div class="image-container">
-                    <img id="drone-image" src="/static/placeholder.jpg" alt="Drone Camera Feed">
+                    <img id="drone-image" src="/static/placeholder.png" alt="Drone Camera Feed">
                     <div class="image-meta">
                         <span id="image-timestamp">No image received</span>
                         <span id="image-size">-</span>
@@ -64,76 +65,6 @@
         </div> <!-- /dashboard -->
     </div> <!-- /container -->
 
-    <!-- ========================= GOOGLE MAP ============================== -->
-    <div id="map" style="height: 400px; width: 100%; margin-top: 1rem;"></div>
-
-    <!-- ========================= Scripts ================================= -->
-    <script src="/static/script.js"></script>
-    <script>
-        // ------------------- Google Maps initialisation -------------------
-        let map, marker;
-
-        function initMap() {
-            // initial dummy position – will be replaced at first update
-            const startPos = { lat: 0, lng: 0 };
-
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 16,
-                center: startPos,
-                mapTypeId: "satellite",
-            });
-
-            marker = new google.maps.Marker({
-                position: startPos,
-                map,
-                icon: {
-                    url: "{{ url_for('static', filename='plane.png') }}",
-                    scaledSize: new google.maps.Size(40, 40),
-                    anchor: new google.maps.Point(20, 20),
-                },
-            });
-
-            updatePosition();
-            // refresh every 3 s
-            setInterval(updatePosition, 3000);
-        }
-
-        function updatePosition() {
-            fetch("/api/next_gps")
-                .then((r) => r.json())
-                .then((data) => {
-                    if (!data.gps) return;
-                    const [lat, lon] = data.gps.split(",").map(Number);
-                    const pos = { lat, lng: lon };
-
-                    const currentPos = marker.getPosition();
-                    const deltaLat = (pos.lat - currentPos.lat()) / 20;
-                    const deltaLng = (pos.lng - currentPos.lng()) / 20;
-                    let step = 0;
-
-                    const animate = () => {
-                        if (step >= 20) return;
-                        const nextLat = currentPos.lat() + deltaLat * step;
-                        const nextLng = currentPos.lng() + deltaLng * step;
-                        const nextPos = { lat: nextLat, lng: nextLng };
-                        marker.setPosition(nextPos);
-                        step++;
-                        requestAnimationFrame(animate);
-                    };
-
-                    animate();
-                    map.panTo(pos);
-
-                    // Update status table as well (optional convenience)
-                    document.getElementById("gps").textContent = data.gps;
-                    document.getElementById("last_update").textContent = new Date().toLocaleTimeString();
-                })
-                .catch((err) => console.error("GPS fetch error:", err));
-        }
-    </script>
-
-    <!-- Google Maps JS SDK (async) -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script>
     <div id="error-display" class="error-display hidden"></div>
 
 </body>

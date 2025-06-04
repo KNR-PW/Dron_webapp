@@ -104,7 +104,7 @@ function connectWebSocket() {
         console.error('WebSocket error:', error);
         isConnected = false;
         updateConnectionStatus(false);
-        showError('WebSocket connection error');
+        showError('WebSocket connection error'+error);
     };
 }
 
