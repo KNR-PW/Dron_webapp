@@ -55,10 +55,10 @@ function init() {
     setupEventListeners();
     connectWebSocket();
     fetchInitialData();
-    updateDroneStatus();
+    // updateDroneStatus();
     updateImagePanel();
     loadGallery();
-    startMissionTimer();
+    // startMissionTimer();
 }
 
 function setupEventListeners() {
@@ -307,7 +307,6 @@ function updateDroneStatus() {
             showError('Failed to update drone status');
         });
 }
-setInterval(updateDroneStatus, 800);
 
 function updateImagePanel() {
     fetch('/api/status')
@@ -362,4 +361,16 @@ function loadGallery() {
         });
 }
 
-document.addEventListener('DOMContentLoaded', init);
+// document.addEventListener('DOMContentLoaded', init);
+document.addEventListener("DOMContentLoaded", () => {
+  // …now all <td id="…"> elements are in the DOM…
+
+  // Start mission timer only after #mission_time is present:
+  startMissionTimer();
+
+  // Start polling drone status only after #altitude, #speed, etc. exist:
+  updateDroneStatus();  
+  setInterval(updateDroneStatus, 800);
+
+  // Etc.
+});

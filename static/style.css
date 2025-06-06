@@ -35,6 +35,7 @@ header {
     padding-bottom: 10px;
     border-bottom: 2px solid var(--primary-color);
 }
+
 .indicator {
     display: inline-block;
     width: 20px;
@@ -55,7 +56,6 @@ header {
     background-color: var(--danger-color);
     color: white;
 }
-
 .connection-status.connected {
     background-color: var(--success-color);
 }
@@ -96,6 +96,7 @@ h2 {
     border-bottom: 1px solid var(--light-gray);
 }
 
+/* General table styles */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -133,6 +134,7 @@ tr:hover {
     font-size: 0.9em;
     color: var(--dark-gray);
 }
+
 .gallery-container {
     display: flex;
     flex-wrap: wrap;
@@ -154,7 +156,6 @@ tr:hover {
 .thumbnail:hover {
     border-color: var(--secondary-color);
 }
-
 
 .log-controls {
     margin-bottom: 10px;
@@ -222,25 +223,6 @@ button:hover {
     font-weight: bold;
 }
 
-.status-panel table tr {
-    height: 48px;           /* Możesz dostosować wartość do własnych potrzeb */
-}
-
-/* Wyrównuje zawartość komórek do środka w pionie */
-.status-panel table th,
-.status-panel table td {
-    vertical-align: middle;
-}
-
-/* Opcjonalnie: ustawia szerokości kolumn, by nie rozciągały się przy dłuższych tekstach */
-.status-panel table th {
-    width: 160px;           /* Możesz dostosować szerokość */
-}
-.status-panel table td {
-    width: 260px;
-    word-break: break-all;  /* Przy długim tekście wymusza łamanie linii */
-}
-
 @media (max-width: 768px) {
     .dashboard {
         grid-template-columns: 1fr;
@@ -263,6 +245,7 @@ button:hover {
         grid-row: 3;
     }
 }
+
 .error-display {
     position: fixed;
     bottom: 20px;
@@ -276,6 +259,7 @@ button:hover {
     z-index: 1000;
     transition: opacity 0.3s ease-in-out;
 }
+
 .error-display.hidden {
     display: none;
 }

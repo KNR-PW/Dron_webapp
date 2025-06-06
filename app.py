@@ -110,7 +110,7 @@ def _build_gps_cycle(path: str) -> cycle:
 
     return cycle(points)
 
-_gps_cycle = _build_gps_cycle(app.config["GPS_POINTS_FILE"])
+# _gps_cycle = _build_gps_cycle(app.config["GPS_POINTS_FILE"])
 
 def get_next_gps() -> str:
     return next(_gps_cycle)
@@ -158,11 +158,11 @@ def handle_status():
 
 @app.route("/api/next_gps")
 def api_next_gps():
-    """Return next GPS coordinate from the predefined list."""
-    point = get_next_gps()  # e.g. "52.23,21.01"
-    drone_status["gps_global"] = point
-    drone_status["last_update"] = datetime.utcnow().isoformat()
-    return jsonify({"gps": point})
+    try:
+        point = drone_status["gps_global"]
+        return jsonify({"gps": point})
+    except Exception as exc:
+        return jsonify({"success": False, "error": str(exc)}), 500
 
 # ---------------------------------------------------------------------------
 # Image uploads                                                               #

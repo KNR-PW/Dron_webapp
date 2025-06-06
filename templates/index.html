@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drone Mission Control</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link
+        href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+        rel="stylesheet"
+    />
 </head>
 <body>
     <div class="container">
@@ -19,7 +23,7 @@
             <!-- ========================= DRONE STATUS ======================== -->
             <section class="status-panel">
                 <h2>Drone Status</h2>
-                <table>
+                <table id="status-table">
                     <tr><th>Height</th>        <td id="altitude">0.0</td></tr>
                     <tr><th>Speed</th>         <td id="speed">0.0</td></tr>
                     <tr><th>Battery percent</th>       <td id="battery_percent">100%</td></tr>
@@ -123,17 +127,16 @@
 
                     animate();
                     map.panTo(pos);
-
-                    // Update status table as well (optional convenience)
-                    document.getElementById("gps").textContent = data.gps;
-                    document.getElementById("last_update").textContent = new Date().toLocaleTimeString();
                 })
                 .catch((err) => console.error("GPS fetch error:", err));
         }
     </script>
 
     <!-- Google Maps JS SDK (async) -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script>
+    <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap"></script> -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initMap">
+    </script>
     <div id="error-display" class="error-display hidden"></div>
 
 </body>
