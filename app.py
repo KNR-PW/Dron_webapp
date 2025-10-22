@@ -243,40 +243,57 @@ def images_api():
 ###############################################################################
 # App entry‑point                                                             #
 ###############################################################################
-import cv2
+try:
+    import cv2  # type: ignore
+    _CV2_AVAILABLE = True
+except Exception:
+    cv2 = None
+    _CV2_AVAILABLE = False
+
 from flask import Response
 
 def generate_frames():
+    if not _CV2_AVAILABLE:
+                raise RuntimeError("OpenCV is not available in the environment")
     camera = cv2.VideoCapture(0)
+    if not camera.isOpened():
+                raise RuntimeError("Camera access unavailable (Render does not provide camera access)")
     while True:
         success, frame = camera.read()
         if not success:
             break
-        else:
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        ret, buffer = cv2.imencode(".jpg", frame)
+        if not ret:
+            break
+        frame_bytes = buffer.tobytes()
+        yield (b"--frame\r\n"
+               b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
 
-@app.route('/video_feed')
+@app.route("/video_feed")
 def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
+    if not _CV2_AVAILABLE:
+                return jsonify({"success": False, "error": "OpenCV is not available on the server"}), 503
+    try:
+        return Response(generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
+    except Exception as exc:
+                return jsonify({"success": False, "error": f"Stream unavailable: {exc}"}), 503
 
 
 
 
 
 if __name__ == "__main__":
-    # initial log & default status ------------------------------------------
+    # Konfiguracja z env (Render ustawia PORT)
+    app.config["UPLOAD_FOLDER"] = os.getenv("UPLOAD_FOLDER", app.config.get("UPLOAD_FOLDER", "data/images"))
+    app.config["LOG_FILE"] = os.getenv("LOG_FILE", app.config.get("LOG_FILE", "data/mission.log"))
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", app.config.get("SECRET_KEY", "change-me"))
+
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+    os.makedirs(os.path.dirname(app.config["LOG_FILE"]), exist_ok=True)
+
     log_message("info", "Drone web application started")
 
+    port = int(os.getenv("PORT", "5000"))
+    debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
 
-    # run -------------------------------------------------------------------
-    app.run(
-        host="0.0.0.0",
-        port=5000,
-        threaded=True,
-        debug=True,
-    )
+    app.run(host="0.0.0.0", port=port, threaded=True, debug=debug)

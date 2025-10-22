@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: dron-webapp
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 2 -k gthread -b 0.0.0.0:$PORT app:app
+    healthCheckPath: /
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: UPLOAD_FOLDER
+        value: /var/data/images
+      - key: LOG_FILE
+        value: /var/data/mission.log
+      - key: FLASK_DEBUG
+        value: "false"
+    disks:
+      - name: data
+        mountPath: /var/data
+        sizeGB: 1
