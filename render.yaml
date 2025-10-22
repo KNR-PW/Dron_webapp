@@ -2,8 +2,6 @@ services:
   - type: web
     name: dron-webapp
     env: python
-    region: virginia
-    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn -w 2 -k gthread -b 0.0.0.0:$PORT app:app
     healthCheckPath: /
