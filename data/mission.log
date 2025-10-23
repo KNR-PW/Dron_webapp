@@ -4391,3 +4391,32 @@
 2025-10-22 17:03:37,078 � INFO � 127.0.0.1 - - [22/Oct/2025 17:03:37] "GET /video_feed HTTP/1.1" 200 -
 2025-10-22 17:03:54,100 � INFO � 127.0.0.1 - - [22/Oct/2025 17:03:54] "POST /api/image HTTP/1.1" 200 -
 2025-10-22 17:04:04,950 � INFO � 127.0.0.1 - - [22/Oct/2025 17:04:04] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-10-23 17:34:42,396 — INFO — Drone web application started
+2025-10-23 17:34:42,402 — INFO — [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.1.0.15:5000
+2025-10-23 17:34:42,402 — INFO — [33mPress CTRL+C to quit[0m
+2025-10-23 17:35:15,034 — INFO — 127.0.0.1 - - [23/Oct/2025 17:35:15] "GET / HTTP/1.1" 200 -
+2025-10-23 17:35:32,152 — INFO — 127.0.0.1 - - [23/Oct/2025 17:35:32] "POST /api/image HTTP/1.1" 200 -
+2025-10-23 17:35:52,605 — INFO — 127.0.0.1 - - [23/Oct/2025 17:35:52] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:35:52,814 — INFO — 127.0.0.1 - - [23/Oct/2025 17:35:52] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:35:52,814 — INFO — 127.0.0.1 - - [23/Oct/2025 17:35:52] "HEAD /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:36:52,736 — INFO — 127.0.0.1 - - [23/Oct/2025 17:36:52] "GET / HTTP/1.1" 200 -
+2025-10-23 17:36:52,887 — INFO — 127.0.0.1 - - [23/Oct/2025 17:36:52] "GET /static/style.css HTTP/1.1" 200 -
+2025-10-23 17:36:52,891 — INFO — 127.0.0.1 - - [23/Oct/2025 17:36:52] "[33mGET /static/placeholder.png HTTP/1.1[0m" 404 -
+2025-10-23 17:36:52,903 — INFO — 127.0.0.1 - - [23/Oct/2025 17:36:52] "[35m[1mGET /video_feed HTTP/1.1[0m" 500 -
+2025-10-23 17:36:52,909 — ERROR — Error on request:
+Traceback (most recent call last):
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/serving.py", line 333, in execute
+    for data in application_iter:
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/wsgi.py", line 256, in __next__
+    return self._next()
+           ^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/wrappers/response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "/home/runner/work/Dron_webapp/Dron_webapp/app.py", line 260, in generate_frames
+    raise RuntimeError("Camera access unavailable (Render does not provide camera access)")
+RuntimeError: Camera access unavailable (Render does not provide camera access)
