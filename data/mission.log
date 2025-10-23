@@ -4420,3 +4420,181 @@ Traceback (most recent call last):
   File "/home/runner/work/Dron_webapp/Dron_webapp/app.py", line 260, in generate_frames
     raise RuntimeError("Camera access unavailable (Render does not provide camera access)")
 RuntimeError: Camera access unavailable (Render does not provide camera access)
+2025-10-23 17:38:23,074 — INFO — Drone web application started
+2025-10-23 17:38:23,080 — INFO — [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.1.0.15:5000
+2025-10-23 17:38:23,081 — INFO — [33mPress CTRL+C to quit[0m
+2025-10-23 17:38:45,016 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:45] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:53,112 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET / HTTP/1.1" 200 -
+2025-10-23 17:38:53,138 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /static/placeholder.png HTTP/1.1" 200 -
+2025-10-23 17:38:53,138 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /static/style.css HTTP/1.1" 200 -
+2025-10-23 17:38:53,141 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /static/script.js HTTP/1.1" 200 -
+2025-10-23 17:38:53,151 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "[35m[1mGET /video_feed HTTP/1.1[0m" 500 -
+2025-10-23 17:38:53,158 — ERROR — Error on request:
+Traceback (most recent call last):
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/serving.py", line 333, in execute
+    for data in application_iter:
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/wsgi.py", line 256, in __next__
+    return self._next()
+           ^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/wrappers/response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "/home/runner/work/Dron_webapp/Dron_webapp/app.py", line 260, in generate_frames
+    raise RuntimeError("Camera access unavailable (Render does not provide camera access)")
+RuntimeError: Camera access unavailable (Render does not provide camera access)
+2025-10-23 17:38:53,213 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:38:53,259 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:53,260 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /api/log HTTP/1.1" 200 -
+2025-10-23 17:38:53,261 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:53,263 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:53,265 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:38:53,605 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:38:53,952 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:53] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:54,346 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:54] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:38:54,751 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:54] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:55,349 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:55] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:38:55,551 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:55] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:56,351 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:56] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:56,353 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:56] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:38:57,151 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:57] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:57,357 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:57] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:38:57,951 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:57] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:58,362 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:58] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:38:58,751 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:58] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:59,151 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:59] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:38:59,152 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:59] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:38:59,158 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:59] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:38:59,372 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:59] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:38:59,551 — INFO — 127.0.0.1 - - [23/Oct/2025 17:38:59] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:00,351 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:00] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:00,393 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:00] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:01,151 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:01] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:01,432 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:01] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:01,951 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:01] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:02,506 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:02] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:02,751 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:02] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:03,551 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:03] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:03,604 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:03] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:04,351 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:04] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:04,443 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:04] "POST /api/image HTTP/1.1" 200 -
+2025-10-23 17:39:05,154 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:05] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:05,157 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:05] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:05,159 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:05] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:05,165 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:05] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:05,168 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:05] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:05,951 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:05] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:06,751 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:06] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:07,551 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:07] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:08,351 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:08] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:09,151 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:09] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:09,951 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:09] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:10,751 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:10] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:11,151 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:11] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:11,152 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:11] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:11,158 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:11] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:11,161 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:11] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:11,551 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:11] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:12,351 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:12] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:13,150 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:13,282 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET / HTTP/1.1" 200 -
+2025-10-23 17:39:13,295 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /static/style.css HTTP/1.1" 200 -
+2025-10-23 17:39:13,298 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /static/placeholder.png HTTP/1.1" 200 -
+2025-10-23 17:39:13,301 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /static/script.js HTTP/1.1" 200 -
+2025-10-23 17:39:13,312 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "[35m[1mGET /video_feed HTTP/1.1[0m" 500 -
+2025-10-23 17:39:13,313 — ERROR — Error on request:
+Traceback (most recent call last):
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/serving.py", line 333, in execute
+    for data in application_iter:
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/wsgi.py", line 256, in __next__
+    return self._next()
+           ^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/werkzeug/wrappers/response.py", line 32, in _iter_encoded
+    for item in iterable:
+  File "/home/runner/work/Dron_webapp/Dron_webapp/app.py", line 260, in generate_frames
+    raise RuntimeError("Camera access unavailable (Render does not provide camera access)")
+RuntimeError: Camera access unavailable (Render does not provide camera access)
+2025-10-23 17:39:13,314 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:13,316 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:13,317 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /api/log HTTP/1.1" 200 -
+2025-10-23 17:39:13,322 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:13,325 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:13,344 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:13,344 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:13,571 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:13] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:14,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:14] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:14,881 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:14] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:14,910 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:14] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:15,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:15] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:16,472 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:16] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:16,510 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:16] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:17,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:17] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:18,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:18] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:18,911 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:18] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:19,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:19] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:19,312 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:19] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:19,317 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:19] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:19,319 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:19] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:19,515 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:19] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:19,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:19] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:20,511 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:20] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:21,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:21] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:22,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:22] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:22,911 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:22] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:23,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:23] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:23,775 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:23] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:24,511 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:24] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:25,319 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:25] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:25,321 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:25] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:25,326 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:25] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:25,331 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:25] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:25,344 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:25] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:26,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:26] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:26,911 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:26] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:27,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:27] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:28,022 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:28] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:28,511 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:28] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:29,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:29] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:30,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:30] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:30,701 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:30] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:30,912 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:30] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:31,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:31] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:31,312 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:31] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:31,316 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:31] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:31,319 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:31] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:31,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:31] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:32,511 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:32] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:33,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:33] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:34,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:34] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:34,323 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:34] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:34,911 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:34] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:35,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:35] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:36,511 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:36] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:37,170 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:37] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:37,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:37] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:37,312 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:37] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:37,318 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:37] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:37,335 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:37] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:37,337 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:37] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:38,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:38] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:38,911 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:38] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:39,238 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:39] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:39,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:39] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:40,511 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:40] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:41,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:41] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:42,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:42] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:42,911 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:42] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:43,270 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:43] "[33mGET /ws HTTP/1.1[0m" 404 -
+2025-10-23 17:39:43,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:43] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:43,312 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:43] "GET /api/images HTTP/1.1" 200 -
+2025-10-23 17:39:43,320 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:43] "GET /images/1761241144_test_image2.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:43,322 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:43] "GET /images/1761240932_test_image.jpg HTTP/1.1" 200 -
+2025-10-23 17:39:43,711 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:43] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:44,511 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:44] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:45,311 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:45] "GET /api/status HTTP/1.1" 200 -
+2025-10-23 17:39:46,111 — INFO — 127.0.0.1 - - [23/Oct/2025 17:39:46] "GET /api/status HTTP/1.1" 200 -

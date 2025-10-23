@@ -237,4 +237,60 @@ function loadGallery() {
         });
 }
 
+function clearLogs() {
+    if (!confirm('Clear all mission logs?')) return;
+    fetch('/api/log', { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                missionLog.innerHTML = '';
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing logs:', error);
+            showError('Failed to clear logs');
+        });
+}
+
+function clearGal() {
+    if (!confirm('Clear all images from gallery?')) return;
+    fetch('/api/images', { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('gallery-container').innerHTML = '';
+                droneImage.src = '/static/placeholder.png';
+                imageTimestamp.textContent = 'No image received';
+                imageSize.textContent = '-';
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing gallery:', error);
+            showError('Failed to clear gallery');
+        });
+}
+
+function updateLogDisplay(logs) {
+    if (!logs || !Array.isArray(logs)) return;
+    missionLog.innerHTML = '';
+    logs.forEach(log => addLogEntry(log.level, log.message, log.timestamp));
+}
+
+function addLogEntry(level, message, timestamp) {
+    if (!missionLog) return;
+    const entry = document.createElement('div');
+    entry.className = `log-entry log-${level.toLowerCase()}`;
+    const ts = timestamp || new Date().toISOString();
+    entry.innerHTML = `<span class="log-timestamp">${new Date(ts).toLocaleTimeString()}</span><span>${message}</span>`;
+    missionLog.appendChild(entry);
+    missionLog.scrollTop = missionLog.scrollHeight;
+}
+
+function updateImageDisplay(image) {
+    if (!image || !image.filename) return;
+    droneImage.src = `/images/${image.filename}`;
+    imageTimestamp.textContent = `Uploaded: ${new Date(image.timestamp).toLocaleString()}`;
+    imageSize.textContent = `Size: ${(image.size / 1024).toFixed(2)} KB`;
+}
+
 document.addEventListener('DOMContentLoaded', init);
