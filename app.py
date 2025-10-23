@@ -13,8 +13,20 @@ from flask import (
     jsonify,
     send_from_directory,
     abort,
+    redirect,
+    url_for,
+    flash,
+)
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    login_required,
+    logout_user,
+    current_user,
 )
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 from PIL import Image
 
 ###############################################################################
@@ -31,6 +43,35 @@ app.config.update(
     SECRET_KEY="your-secret-key-here",  # TODO: change in production
 )
 
+# ---- Flask-Login setup -----------------------------------------------------
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+login_manager.login_message = "Please log in to access this page."
+
+# ---- User Management -------------------------------------------------------
+class User(UserMixin):
+    def __init__(self, id, username, password_hash):
+        self.id = id
+        self.username = username
+        self.password_hash = password_hash
+
+# Simple in-memory user database (in production, use a real database)
+# Default credentials: admin / admin123
+users = {
+    "admin": User(
+        id="1",
+        username="admin",
+        password_hash=generate_password_hash("admin123"),
+    )
+}
+
+@login_manager.user_loader
+def load_user(user_id):
+    for user in users.values():
+        if user.id == user_id:
+            return user
+    return None
 
 # ---- Ensure runtime directories exist --------------------------------------
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
@@ -85,7 +126,40 @@ def log_message(level: str, message: str) -> None:
 # Routes — Dashboard & API                                                    #
 ###############################################################################
 
+# ---------------------------------------------------------------------------
+# Authentication routes
+# ---------------------------------------------------------------------------
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Handle user login"""
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
+    
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        remember = request.form.get("remember") == "on"
+        
+        user = users.get(username)
+        if user and check_password_hash(user.password_hash, password):
+            login_user(user, remember=remember)
+            next_page = request.args.get("next")
+            return redirect(next_page or url_for("dashboard"))
+        else:
+            return render_template("login.html", error="Invalid username or password")
+    
+    return render_template("login.html")
+
+@app.route("/logout")
+@login_required
+def logout():
+    """Handle user logout"""
+    logout_user()
+    return redirect(url_for("login"))
+
 @app.route("/")
+@login_required
 def dashboard():
     """Main dashboard page"""
     return render_template(
@@ -100,6 +174,7 @@ def dashboard():
 # ---------------------------------------------------------------------------
 
 @app.route("/api/status", methods=["GET", "POST"])
+@login_required
 def handle_status():
     global drone_status, latest_image
 
@@ -122,6 +197,7 @@ def handle_status():
 # ---------------------------------------------------------------------------
 
 @app.route("/api/image", methods=["POST"])
+@login_required
 def upload_image():
     global latest_image
 
@@ -145,6 +221,7 @@ def upload_image():
     return jsonify({"success": True, "image": latest_image})
 
 @app.route("/images/<path:filename>")
+@login_required
 def serve_image(filename):
     if ".." in filename or filename.startswith("/"):
         abort(400)
@@ -155,6 +232,7 @@ def serve_image(filename):
 # ---------------------------------------------------------------------------
 
 @app.route("/api/log", methods=["GET", "POST", "DELETE"])
+@login_required
 def handle_log():
     global mission_log
 
@@ -178,6 +256,7 @@ def handle_log():
 # ---------------------------------------------------------------------------
 
 @app.route("/api/telemetry", methods=["POST"])
+@login_required
 def telemetry_endpoint():
     global drone_status, latest_image
 
@@ -220,6 +299,7 @@ def telemetry_endpoint():
 # ---------------------------------------------------------------------------
 
 @app.route("/api/images", methods=["GET", "DELETE"])
+@login_required
 def images_api():
     folder = app.config["UPLOAD_FOLDER"]
 
@@ -270,6 +350,7 @@ def generate_frames():
                b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
 
 @app.route("/video_feed")
+@login_required
 def video_feed():
     if not _CV2_AVAILABLE:
                 return jsonify({"success": False, "error": "OpenCV is not available on the server"}), 503
