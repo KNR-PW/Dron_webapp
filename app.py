@@ -15,7 +15,6 @@ from flask import (
     abort,
     redirect,
     url_for,
-    flash,
 )
 from flask_login import (
     LoginManager,
@@ -36,11 +35,18 @@ from PIL import Image
 app = Flask(__name__)
 
 # ---- Core settings ----------------------------------------------------------
+# Generate a secure SECRET_KEY if not provided via environment variable
+secret_key = os.getenv("SECRET_KEY")
+if not secret_key:
+    import secrets
+    secret_key = secrets.token_hex(32)
+    print("WARNING: Using generated SECRET_KEY. Set SECRET_KEY environment variable for production!")
+
 app.config.update(
     MAX_CONTENT_LENGTH=16 * 1024 * 1024,  # 16 MB upload limit
     UPLOAD_FOLDER="data/images",
     LOG_FILE="data/mission.log",
-    SECRET_KEY="your-secret-key-here",  # TODO: change in production
+    SECRET_KEY=secret_key,
 )
 
 # ---- Flask-Login setup -----------------------------------------------------
@@ -57,12 +63,16 @@ class User(UserMixin):
         self.password_hash = password_hash
 
 # Simple in-memory user database (in production, use a real database)
-# Default credentials: admin / admin123
+# Default credentials can be set via environment variables
+default_admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+if default_admin_password == "admin123":
+    print("WARNING: Using default admin password. Set ADMIN_PASSWORD environment variable for production!")
+
 users = {
     "admin": User(
         id="1",
         username="admin",
-        password_hash=generate_password_hash("admin123"),
+        password_hash=generate_password_hash(default_admin_password),
     )
 }
 

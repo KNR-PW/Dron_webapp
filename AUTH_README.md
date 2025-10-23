@@ -11,10 +11,13 @@ The webapp now requires authentication to access all pages and API endpoints.
 ## Security Notes
 
 1. **Change the default password in production!** The default credentials are for development/testing only.
-2. The SECRET_KEY can be set via environment variable:
+2. **Required for production:** Set these environment variables:
    ```bash
    export SECRET_KEY="your-secure-random-key-here"
+   export ADMIN_PASSWORD="your-secure-password"
    ```
+   If SECRET_KEY is not set, a random one will be generated (sessions won't persist across restarts).
+   If ADMIN_PASSWORD is not set, the default "admin123" will be used (insecure!).
 3. In production, consider using a proper database for user management instead of the in-memory storage.
 
 ## Adding More Users
