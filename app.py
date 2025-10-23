@@ -26,6 +26,7 @@ from flask_login import (
 )
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import urlparse, urljoin
 from PIL import Image
 
 ###############################################################################
@@ -140,6 +141,14 @@ def log_message(level: str, message: str) -> None:
 # Authentication routes
 # ---------------------------------------------------------------------------
 
+def is_safe_url(target):
+    """Check if the URL is safe for redirects (relative URLs only)"""
+    if not target:
+        return False
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ("http", "https") and ref_url.netloc == test_url.netloc
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Handle user login"""
@@ -155,7 +164,9 @@ def login():
         if user and check_password_hash(user.password_hash, password):
             login_user(user, remember=remember)
             next_page = request.args.get("next")
-            return redirect(next_page or url_for("dashboard"))
+            if next_page and is_safe_url(next_page):
+                return redirect(next_page)
+            return redirect(url_for("dashboard"))
         else:
             return render_template("login.html", error="Invalid username or password")
     

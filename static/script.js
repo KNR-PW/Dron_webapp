@@ -281,7 +281,19 @@ function addLogEntry(level, message, timestamp) {
     const entry = document.createElement('div');
     entry.className = `log-entry log-${level.toLowerCase()}`;
     const ts = timestamp || new Date().toISOString();
-    entry.innerHTML = `<span class="log-timestamp">${new Date(ts).toLocaleTimeString()}</span><span>${message}</span>`;
+    
+    // Create timestamp span
+    const timestampSpan = document.createElement('span');
+    timestampSpan.className = 'log-timestamp';
+    timestampSpan.textContent = new Date(ts).toLocaleTimeString();
+    
+    // Create message span
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    
+    // Append to entry
+    entry.appendChild(timestampSpan);
+    entry.appendChild(messageSpan);
     missionLog.appendChild(entry);
     missionLog.scrollTop = missionLog.scrollHeight;
 }
