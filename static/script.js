@@ -237,4 +237,75 @@ function loadGallery() {
         });
 }
 
+function clearLogs() {
+    if (!confirm('Are you sure you want to clear the logs?')) return;
+    fetch('/api/log', {method: 'DELETE'})
+        .then(response => response.json())
+        .then (data => {
+            if (data.success) {
+                missionLog.innerHTML = '';
+
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing logs:', error);
+            showError('Failed to clear logs');
+
+        });
+}
+
+function clearGal() {
+    if (!confirm ('Are you sure you want to clear the image gallery?')) return;
+    fetch('/api/images', {method: 'DELETE'})
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('gallery-container').innerHTML = '';
+                droneImage.src = 'static/placeholder.png';
+                imageTimestamp.textContent = 'no image recived';
+                imageSize.textContent = '-';
+            }
+        })
+        .catch(error => {
+            console.error('Error clearing gallery:', error);
+            showError('Failed to clear image gallery');
+
+        });
+}
+
+function updateLogDisplay(logs) {
+    if (!logs || !Array.isArray(logs)) return;
+    missionLog.innerHTML = '';
+    logs.forEach(log => addLogEntry(log.level, log.message, log.timestamp));
+}
+
+function addLogEntry(level, message, timestamp) {
+    if (!missionLog) return;
+    const entry = document.createElement('div');
+    entry.className = `log-entry log-${level.toLowerCase()}`;
+    const ts = timestamp || new Date().toISOString();
+
+    // Create timestamp span
+    const timestampSpan = document.createElement('span');
+    timestampSpan.className = 'log-timestamp';
+    timestampSpan.textContent = new Date(ts).toLocaleTimeString();
+
+    // Create message span
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+
+    // Append to entry
+    entry.appendChild(timestampSpan);
+    entry.appendChild(messageSpan);
+    missionLog.appendChild(entry);
+    missionLog.scrollTop = missionLog.scrollHeight;
+}
+
+function updateImageDisplay(image) {
+    if (!image || !image.filename) return;
+    droneImage.src = `/images/${image.filename}`;
+    imageTimestamp.textContent = `Uploaded: ${new Date(image.timestamp).toLocaleString()}`;
+    imageSize.textContent = `Size: ${(image.size / 1024).toFixed(2)} KB`;
+}
+
 document.addEventListener('DOMContentLoaded', init);
