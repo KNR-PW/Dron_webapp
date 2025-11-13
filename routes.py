@@ -23,6 +23,13 @@ def dashboard():
     )
 
 
+@bp.route('/map')
+@login_required
+def map_view():
+    # Proste renderowanie strony z mapą i przyciskami
+    return render_template('map.html')
+
+
 @bp.route('/api/status', methods=['GET', 'POST'])
 @login_required
 def handle_status():
@@ -179,4 +186,3 @@ def video_feed():
     except Exception as exc:
         state.log_message(current_app, 'error', f'Błąd strumienia wideo: {exc}')
         return jsonify({'success': False, 'error': str(exc)}), 503
-
