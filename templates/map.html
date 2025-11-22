@@ -8,9 +8,56 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <style>
-    #map { height: 70vh; width: 100%; border: 1px solid #ccc; border-radius: 6px; }
+    #map { height: 60vh; width: 100%; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
     .toolbar { margin: 10px 0 20px; display: flex; gap: 10px; flex-wrap: wrap; }
     .toolbar button.secondary { background: var(--primary-color); }
+
+    /* Mission Table Styles */
+    .mission-container {
+        overflow-x: auto;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        padding: 10px;
+    }
+    table.mission-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+    table.mission-table th, table.mission-table td {
+        border: 1px solid #eee;
+        padding: 8px;
+        text-align: center;
+    }
+    table.mission-table th {
+        background-color: #3498db;
+        font-weight: 600;
+    }
+    table.mission-table input, table.mission-table select {
+        width: 100%;
+        padding: 4px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        box-sizing: border-box;
+    }
+    .btn-delete {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+    .btn-move {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+        margin: 0 2px;
+    }
   </style>
 </head>
 <body>
@@ -18,20 +65,41 @@
     <header>
       <h1>Mapa misji</h1>
       <nav>
-        <a href="/" style="margin-right: 10px;">Dashboard</a>
-        <a href="/map" style="margin-right: 10px; font-weight: bold;">Mapa</a>
+        <a href="/" style="color: white; text-decoration: none; background-color: #074761; padding: 8px 15px; border-radius: 4px;">Dashboard</a>
+          <a href="/map" style="color: white; text-decoration: none; background-color: #075512; padding: 8px 15px; border-radius: 4px;">Mapa misji</a>
         <a href="/logout" style="color: white; text-decoration: none; background-color: #e74c3c; padding: 8px 15px; border-radius: 4px;">Logout</a>
       </nav>
     </header>
 
     <section class="panel">
       <div class="toolbar">
-        <button id="btn-start">Start</button>
+        <button id="btn-start">Start Misji</button>
         <button id="btn-stop" class="secondary">Stop</button>
-        <button id="btn-add-marker">Dodaj marker</button>
-        <button id="btn-clear-markers" class="secondary">Wyczyść markery</button>
+        <button id="btn-add-marker">Dodaj WP (Center)</button>
+        <button id="btn-clear-markers" class="secondary">Wyczyść wszystko</button>
       </div>
+
       <div id="map"></div>
+
+      <div class="mission-container">
+        <h3>Planer Misji</h3>
+        <table class="mission-table" id="missionTable">
+            <thead>
+                <tr>
+                    <th style= "width: 50px">Lp.</th>
+                    <th>Polecenie</th>
+                    <th style="width: 80px">Delay (s)</th>
+                    <th>Lat</th>
+                    <th>Long</th>
+                    <th style="width: 80px">Alt (m)</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be added here dynamically -->
+            </tbody>
+        </table>
+      </div>
     </section>
   </div>
 
@@ -43,38 +111,130 @@
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: 'powermatix'
     }).addTo(map);
 
-    const markers = [];
+    // Store markers and data
+    let waypoints = [];
+    let polyline = L.polyline([], {color: 'yellow', dashArray: '10, 10'}).addTo(map);
 
-    function addMarker(latlng) {
-      const m = L.marker(latlng).addTo(map);
-      markers.push(m);
-      return m;
+    function updateTable() {
+        const tbody = document.querySelector('#missionTable tbody');
+        tbody.innerHTML = '';
+
+        waypoints.forEach((wp, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>
+                    <select onchange="updateWaypoint(${index}, 'command', this.value)">
+                        <option value="WAYPOINT" ${wp.command === 'WAYPOINT' ? 'selected' : ''}>WAYPOINT</option>
+                        <option value="RTL" ${wp.command === 'RTL' ? 'selected' : ''}>RTL</option>
+                        <option value="LAND" ${wp.command === 'LAND' ? 'selected' : ''}>LAND</option>
+                        <option value="TAKEOFF" ${wp.command === 'TAKEOFF' ? 'selected' : ''}>TAKEOFF</option>
+                    </select>
+                </td>
+                <td><input type="number" value="${wp.delay}" min="0" onchange="updateWaypoint(${index}, 'delay', this.value)"></td>
+                <td><input type="number" step="0.000001" value="${wp.lat.toFixed(7)}" onchange="updateWaypoint(${index}, 'lat', this.value)"></td>
+                <td><input type="number" step="0.000001" value="${wp.lng.toFixed(7)}" onchange="updateWaypoint(${index}, 'lng', this.value)"></td>
+                <td><input type="number" value="${wp.alt}" onchange="updateWaypoint(${index}, 'alt', this.value)"></td>
+                <td>
+                    <button class="btn-move" onclick="moveWaypoint(${index}, -1)">⬆</button>
+                    <button class="btn-move" onclick="moveWaypoint(${index}, 1)">⬇</button>
+                    <button class="btn-delete" onclick="removeWaypoint(${index})">✖</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Update map lines
+        const latlngs = waypoints.map(wp => [wp.lat, wp.lng]);
+        polyline.setLatLngs(latlngs);
     }
 
+    function addWaypoint(latlng) {
+        const marker = L.marker(latlng, {draggable: true}).addTo(map);
+
+        const wp = {
+            marker: marker,
+            lat: latlng.lat,
+            lng: latlng.lng,
+            alt: 20, // Default altitude
+            command: 'WAYPOINT',
+            delay: 0
+        };
+
+        // Update internal state when marker is dragged
+        marker.on('dragend', function(event) {
+            const position = marker.getLatLng();
+            wp.lat = position.lat;
+            wp.lng = position.lng;
+            updateTable();
+        });
+
+        waypoints.push(wp);
+        updateTable();
+    }
+
+    function removeWaypoint(index) {
+        map.removeLayer(waypoints[index].marker);
+        waypoints.splice(index, 1);
+        updateTable();
+    }
+
+    function moveWaypoint(index, direction) {
+        if (index + direction < 0 || index + direction >= waypoints.length) return;
+
+        const temp = waypoints[index];
+        waypoints[index] = waypoints[index + direction];
+        waypoints[index + direction] = temp;
+        updateTable();
+    }
+
+    // Global function to handle input changes
+    window.updateWaypoint = function(index, field, value) {
+        if (field === 'lat' || field === 'lng') {
+            waypoints[index][field] = parseFloat(value);
+            const newLatLng = [waypoints[index].lat, waypoints[index].lng];
+            waypoints[index].marker.setLatLng(newLatLng);
+        } else if (field === 'alt' || field === 'delay') {
+            waypoints[index][field] = parseFloat(value);
+        } else {
+            waypoints[index][field] = value;
+        }
+        // Redraw lines if position changed
+        if (field === 'lat' || field === 'lng') {
+            const latlngs = waypoints.map(wp => [wp.lat, wp.lng]);
+            polyline.setLatLngs(latlngs);
+        }
+    };
+
+    // Make functions available globally for inline HTML events
+    window.removeWaypoint = removeWaypoint;
+    window.moveWaypoint = moveWaypoint;
+
+    // Event Listeners
+    map.on('click', function(e) {
+        addWaypoint(e.latlng);
+    });
+
     document.getElementById('btn-add-marker').addEventListener('click', () => {
-      const center = map.getCenter();
-      addMarker(center);
+        const center = map.getCenter();
+        addWaypoint(center);
     });
 
     document.getElementById('btn-clear-markers').addEventListener('click', () => {
-      markers.forEach(m => map.removeLayer(m));
-      markers.length = 0;
+        waypoints.forEach(wp => map.removeLayer(wp.marker));
+        waypoints = [];
+        updateTable();
     });
 
     document.getElementById('btn-start').addEventListener('click', () => {
-      alert('Start: placeholder action');
+        // Extract clean data for sending to backend
+        const missionData = waypoints.map(({marker, ...data}) => data);
+        console.log('Mission Data:', missionData);
+        alert('Sending mission: ' + JSON.stringify(missionData, null, 2));
     });
-
-    document.getElementById('btn-stop').addEventListener('click', () => {
-      alert('Stop: placeholder action');
-    });
-
-    // Dodawanie markera kliknięciem
-    map.on('click', (e) => addMarker(e.latlng));
   </script>
 </body>
 </html>
-
