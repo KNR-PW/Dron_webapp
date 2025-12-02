@@ -11,11 +11,13 @@
         <header>
             <h1>Drone Mission Control</h1>
             <div class="flight-status">
-                <span id="flight-status-indicator" class="indicator"></span> Drone Status
+                <span id="flight-status-indicator"
+                      class="indicator"
+                      data-connection="offline"></span>
+                Drone Status
                 <a href="/map" style="margin-left: 20px; text-decoration: none; background-color: #3498db; color: white; padding: 8px 15px; border-radius: 4px;">Mapa</a>
                 <a href="/logout" style="margin-left: 20px; color: white; text-decoration: none; background-color: #e74c3c; padding: 8px 15px; border-radius: 4px;">Logout</a>
             </div>
-
         </header>
 
         <div class="dashboard">
@@ -23,15 +25,15 @@
             <section class="status-panel">
                 <h2>Drone Status</h2>
                 <table>
-                    <tr><th>Height</th>        <td id="altitude">0.0</td></tr>
-                    <tr><th>Speed</th>         <td id="speed">0.0</td></tr>
-                    <tr><th>Battery percent</th>       <td id="battery_percent">100%</td></tr>
-                    <tr><th>Battery voltage</th>   <td id="battery_voltage">0V</td></tr>
-                    <tr><th>GPS GLOBAL</th>           <td id="gps_global">0.0,0.0</td></tr>
-                    <tr><th>GPS RELATIVE</th>           <td id="gps_relative">0.0,0.0</td></tr>
-                    <tr><th>Mission time</th>  <td id="mission_time">00:00:00</td></tr>
-                    <tr><th>Flight mode</th>   <td id="flight_mode">INIT</td></tr>
-                    <tr><th>Last update</th>   <td id="last_update">-</td></tr>
+                    <tr><th>Height</th>          <td id="altitude">0.0</td></tr>
+                    <tr><th>Speed</th>           <td id="speed">0.0</td></tr>
+                    <tr><th>Battery percent</th> <td id="battery_percent">100%</td></tr>
+                    <tr><th>Battery voltage</th> <td id="battery_voltage">0V</td></tr>
+                    <tr><th>GPS GLOBAL</th>      <td id="gps_global">0.0,0.0</td></tr>
+                    <tr><th>GPS RELATIVE</th>    <td id="gps_relative">0.0,0.0</td></tr>
+                    <tr><th>Mission time</th>    <td id="mission_time">00:00:00</td></tr>
+                    <tr><th>Flight mode</th>     <td id="flight_mode">INIT</td></tr>
+                    <tr><th>Last update</th>     <td id="last_update">-</td></tr>
                 </table>
             </section>
 
@@ -52,7 +54,9 @@
             <!-- ========================= LIVE VIDEO STREAM =================== -->
             <div class="camera-view-container">
                 <h3>Widok kamery na żywo</h3>
-                <img id="live-video" src="/video_feed" style="width:500px; max-width:100%; border: 2px solid #333;" alt="Live stream">
+                <img id="live-video" src="/video_feed"
+                     style="width:500px; max-width:100%; border: 2px solid #333;"
+                     alt="Live stream">
             </div>
 
             <!-- ========================= MISSION LOG ======================== -->
@@ -69,6 +73,9 @@
 
     <div id="error-display" class="error-display hidden"></div>
 
+    <!-- Socket.IO client (musi być przed script.js) -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+    <!-- Twój główny skrypt -->
     <script src="/static/script.js"></script>
 
 </body>

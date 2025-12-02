@@ -74,52 +74,44 @@ function setupEventListeners() {
 }
 
 function connectWebSocket() {
-    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-    const host = window.location.host;
-    const wsUrl = `${protocol}${host}/ws`;
+    if (socket && socket.connected) return;
+    socket = io({
+        transports: ['websocket', 'polling'],
+        reconnectionAttempts: maxReconnectAttempts,
+    });
 
-    socket = new WebSocket(wsUrl);
-
-    socket.onopen = () => {
-        console.log('WebSocket connected');
+    socket.on('connect', () => {
+        console.log('Socket.IO connected');
         isConnected = true;
         reconnectAttempts = 0;
         updateConnectionStatus(true);
-    };
+    });
 
-    socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+    socket.on('connect_error', (error) => {
+        console.error('Socket.IO connect error:', error);
+        showError('Socket connection error: ' + error.message);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Socket.IO disconnected');
+        isConnected = false;
+        updateConnectionStatus(false);
+    });
+
+    socket.on('reconnect_attempt', (attempt) => {
+        reconnectAttempts = attempt;
+        console.log(`Socket.IO reconnect attempt ${attempt}`);
+    });
+
+    socket.on('telemetry', (data) => {
         processIncomingData(data);
-    };
-
-    socket.onclose = () => {
-        console.log('WebSocket disconnected');
-        isConnected = false;
-        updateConnectionStatus(false);
-        attemptReconnect();
-    };
-
-    socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        isConnected = false;
-        updateConnectionStatus(false);
-        showError('WebSocket connection error'+error);
-    };
-}
-
-function attemptReconnect() {
-    if (reconnectAttempts < maxReconnectAttempts) {
-        reconnectAttempts++;
-        console.log(`Attempting to reconnect (${reconnectAttempts}/${maxReconnectAttempts})...`);
-        setTimeout(connectWebSocket, reconnectInterval);
-    } else {
-        console.error('Max reconnection attempts reached');
-        showError('Max reconnection attempts reached');
-    }
+    });
 }
 
 function updateConnectionStatus(connected) {
-    // Optional visual indicator
+    const indicator = document.getElementById('flight-status-indicator');
+    if (!indicator) return;
+    indicator.dataset.connection = connected ? 'online' : 'offline';
 }
 
 function fetchInitialData() {
@@ -143,10 +135,14 @@ function fetchInitialData() {
 }
 
 function processIncomingData(data) {
+    if (!data || typeof data !== 'object') return;
     if (data.status) updateDroneStatus(data.status);
     if (data.image) updateImageDisplay(data.image);
-    if (data.logs) updateLogDisplay(data.logs);
-    if (data.log) addLogEntry(data.log.level, data.log.message);
+    if (Array.isArray(data.logs)) updateLogDisplay(data.logs);
+    if (data.log) addLogEntry(data.log.level || 'info', data.log.message, data.log.timestamp);
+    if (data.topic && data.payload) {
+        addLogEntry('info', `MQTT ${data.topic}: ${JSON.stringify(data.payload)}`);
+    }
 }
 
 function updateFlightStatusIndicator(flightMode) {
