@@ -13,8 +13,15 @@
             <div class="flight-status">
                 <span id="flight-status-indicator"
                       class="indicator"
-                      data-connection="offline"></span>
+                      data-connection="offline"
+                      title="Connection Status"></span>
                 Drone Status
+                <span id="mqtt-status-indicator"
+                      class="indicator"
+                      data-connection="offline"
+                      title="MQTT Connection"
+                      style="margin-left: 20px;"></span>
+                MQTT
                 <a href="/map" style="margin-left: 20px; text-decoration: none; background-color: #3498db; color: white; padding: 8px 15px; border-radius: 4px;">Mapa</a>
                 <a href="/logout" style="margin-left: 20px; color: white; text-decoration: none; background-color: #e74c3c; padding: 8px 15px; border-radius: 4px;">Logout</a>
             </div>
@@ -22,7 +29,7 @@
 
         <div class="dashboard">
             <!-- ========================= DRONE STATUS ======================== -->
-            <section class="status-panel">
+            <section class="status-panel panel">
                 <h2>Drone Status</h2>
                 <table>
                     <tr><th>Height</th>          <td id="altitude">0.0</td></tr>
@@ -38,7 +45,7 @@
             </section>
 
             <!-- ========================= CAMERA IMAGE ======================= -->
-            <section class="image-panel">
+            <section class="image-panel panel">
                 <h2>Latest Image</h2>
                 <div class="image-container">
                     <img id="drone-image" src="/static/placeholder.png" alt="Drone Camera Feed">
@@ -52,16 +59,15 @@
             </section>
 
             <!-- ========================= LIVE VIDEO STREAM =================== -->
-            <div class="camera-view-container">
+            <div class="camera-view-container panel">
                 <h3>Widok kamery na żywo</h3>
                 <img id="live-video" src="/video_feed"
-                     style="width:500px; max-width:100%; border: 2px solid #333;"
                      alt="Live stream">
             </div>
 
             <!-- ========================= MISSION LOG ======================== -->
-            <section class="log-panel">
-                <h2>Mission Log</h2>
+            <section class="log-panel panel">
+                <h2>Mission Log <span id="log-counter" style="font-size: 0.8em; color: #7f8c8d; margin-left: 10px;">(0)</span></h2>
                 <div class="log-controls">
                     <button id="clear-gallery">Clear gallery</button>
                     <button id="clear-log">Clear</button>
