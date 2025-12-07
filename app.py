@@ -107,10 +107,10 @@ def _env_flag(name: str, default: str = "1") -> bool:
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 MQTT_ENABLED = _env_flag("MQTT_ENABLED", "1")
-MQTT_HOST = os.getenv("MQTT_HOST", "f4209e15de424182b7f1f41170484e60.s1.eu.hivemq.cloud").strip()
+MQTT_HOST = os.getenv("MQTT_HOST", "").strip()
 MQTT_PORT = int(os.getenv("MQTT_PORT", "8883"))
-MQTT_USERNAME = os.getenv("MQTT_USERNAME", "Knr_web")
-MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "Drony123")
+MQTT_USERNAME = os.getenv("MQTT_USERNAME", "")
+MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
 
 MQTT_TOPICS = [
     t.strip()
