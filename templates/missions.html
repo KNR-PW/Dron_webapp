@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Missions - Drone Mission Control</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Missions</h1>
+      <nav>
+        <a href="/" style="color: white; text-decoration: none; background-color: #074761; padding: 8px 15px; border-radius: 4px;">Dashboard</a>
+        <a href="/map" style="color: white; text-decoration: none; background-color: #075512; padding: 8px 15px; border-radius: 4px;">Mapa misji</a>
+        <a href="/missions" style="color: white; text-decoration: none; background-color: #3498db; padding: 8px 15px; border-radius: 4px;">Missions</a>
+        <a href="/logout" style="color: white; text-decoration: none; background-color: #e74c3c; padding: 8px 15px; border-radius: 4px;">Logout</a>
+      </nav>
+    </header>
+
+    <section class="panel">
+      <div class="mission-buttons">
+        <button class="mission-btn" data-mission="1">Mission 1</button>
+        <button class="mission-btn secondary" data-mission="2">Mission 2</button>
+        <button class="mission-btn" data-mission="3">Mission 3</button>
+        <button class="mission-btn secondary" data-mission="4">Mission 4</button>
+        <button class="mission-btn" data-mission="5">Mission 5</button>
+        <button class="mission-btn secondary" data-mission="6">Mission 6</button>
+      </div>
+      <div class="mission-output hidden" id="missionOutput"></div>
+    </section>
+  </div>
+
+  <script>
+    const output = document.getElementById('missionOutput');
+    document.querySelectorAll('.mission-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const mission = btn.getAttribute('data-mission');
+        try {
+          const res = await fetch('/api/missions/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mission: Number(mission) })
+          });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          output.textContent = `mission [${mission}] started.`;
+          output.classList.remove('hidden');
+        } catch (err) {
+          output.textContent = `mission [${mission}] failed to start.`;
+          output.classList.remove('hidden');
+          console.error(err);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

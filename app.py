@@ -67,6 +67,7 @@ app.config.update(
     SESSION_COOKIE_SECURE=_is_prod,
     REMEMBER_COOKIE_SECURE=_is_prod,
     PREFERRED_URL_SCHEME=_preferred_scheme,
+    MQTT_CLIENT=None,
 )
 
 # ------------------------------------------------------
@@ -122,6 +123,15 @@ MQTT_TOPICS = [
 ]
 
 mqtt_client: Optional[mqtt.Client] = None
+MQTT_MISSION_TOPIC = os.getenv("MQTT_MISSION_TOPIC", "drone/mission/start").strip()
+MQTT_MISSION_QOS = int(os.getenv("MQTT_MISSION_QOS", "0"))
+MQTT_MISSION_RETAIN = _env_flag("MQTT_MISSION_RETAIN", "0")
+
+app.config.update(
+    MQTT_MISSION_TOPIC=MQTT_MISSION_TOPIC,
+    MQTT_MISSION_QOS=MQTT_MISSION_QOS,
+    MQTT_MISSION_RETAIN=MQTT_MISSION_RETAIN,
+)
 
 
 # ------------------------------------------------------
@@ -300,6 +310,7 @@ def _start_mqtt_bridge() -> None:
         return
 
     mqtt_client = mqtt.Client()
+    app.config["MQTT_CLIENT"] = mqtt_client
 
     try:
         mqtt_client.tls_set(tls_version=ssl.PROTOCOL_TLS)

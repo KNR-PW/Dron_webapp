@@ -205,6 +205,48 @@ button:hover {
     background-color: #c0392b;
 }
 
+.mission-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 20px 0;
+}
+
+.mission-btn {
+    font-size: 1.4rem;
+    padding: 22px 40px;
+    min-width: 220px;
+    border-radius: 10px;
+    background-color: var(--secondary-color);
+    color: white;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.mission-btn.secondary {
+    background-color: var(--primary-color);
+}
+
+.mission-btn:hover {
+    background-color: #2b7bb9;
+}
+
+.mission-btn.secondary:hover {
+    background-color: #233241;
+}
+
+.mission-output {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--dark-gray);
+}
+
+.mission-output.hidden {
+    display: none;
+}
+
 .log-container {
     height: 300px;
     overflow-y: auto;
@@ -353,4 +395,3 @@ button:hover {
     display: block;
     margin: 0 auto;
 }
-

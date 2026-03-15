@@ -6,6 +6,7 @@ from io import BytesIO
 import os
 import time
 import base64
+import json
 
 import state
 
@@ -28,6 +29,12 @@ def dashboard():
 def map_view():
     # Proste renderowanie strony z mapą i przyciskami
     return render_template('map.html')
+
+
+@bp.route('/missions')
+@login_required
+def missions_view():
+    return render_template('missions.html')
 
 
 @bp.route('/api/status', methods=['GET', 'POST'])
@@ -87,6 +94,38 @@ def handle_log():
         return jsonify({'success': True})
 
     return jsonify({'logs': state.mission_log[-100:]})
+
+
+@bp.route('/api/missions/start', methods=['POST'])
+@login_required
+def start_mission():
+    data = request.get_json(silent=True) or {}
+    mission = data.get("mission")
+    if mission is None:
+        return jsonify({'success': False, 'error': 'Mission is required'}), 400
+    try:
+        mission = int(mission)
+    except Exception:
+        return jsonify({'success': False, 'error': 'Mission must be an integer'}), 400
+
+    client = current_app.config.get("MQTT_CLIENT")
+    if not client:
+        return jsonify({'success': False, 'error': 'MQTT client not available'}), 503
+
+    topic = current_app.config.get("MQTT_MISSION_TOPIC", "drone/mission/start")
+    qos = int(current_app.config.get("MQTT_MISSION_QOS", 0))
+    retain = bool(current_app.config.get("MQTT_MISSION_RETAIN", False))
+    payload = {"mission": mission, "command": "start"}
+
+    try:
+        info = client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
+        if info.rc != 0:
+            return jsonify({'success': False, 'error': f'MQTT publish failed ({info.rc})'}), 502
+    except Exception as exc:
+        return jsonify({'success': False, 'error': str(exc)}), 502
+
+    state.log_message(current_app, "info", f"Mission {mission} start requested")
+    return jsonify({'success': True, 'mission': mission})
 
 
 @bp.route('/api/telemetry', methods=['POST'])
