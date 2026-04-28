@@ -5,55 +5,653 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Missions - Drone Mission Control</title>
   <link rel="stylesheet" href="/static/style.css">
+  <style>
+    .missions-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .mission-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      grid-column: 1 / 2;
+    }
+
+    .mission-card {
+      background-color: #f5f5f5;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .mission-card:hover {
+      background-color: #e8f4f8;
+      border-color: #3498db;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .mission-card.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background-color: #f0f0f0;
+    }
+
+    .mission-card button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      background-color: #3498db;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .mission-card button:hover:not(:disabled) {
+      background-color: #2980b9;
+    }
+
+    .mission-card button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .mission-card.secondary button {
+      background-color: #27ae60;
+    }
+
+    .mission-card.secondary button:hover:not(:disabled) {
+      background-color: #229954;
+    }
+
+    .mission-info {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .status-panel {
+      grid-column: 2 / 3;
+      grid-row: 1 / 3;
+      background-color: #f9f9f9;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      height: fit-content;
+    }
+
+    .status-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    .status-row:last-child {
+      border-bottom: none;
+    }
+
+    .status-label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .status-value {
+      color: #2c3e50;
+      word-break: break-word;
+      text-align: right;
+      max-width: 150px;
+    }
+
+    .mission-progress {
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background-color: #ecf0f1;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3498db, #2ecc71);
+      width: 0%;
+      transition: width 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .mission-timer {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .timer-display {
+      font-size: 28px;
+      font-weight: bold;
+      color: #2c3e50;
+      font-family: 'Courier New', monospace;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .status-badge.idle {
+      background-color: #ecf0f1;
+      color: #7f8c8d;
+    }
+
+    .status-badge.busy {
+      background-color: #f39c12;
+      color: white;
+    }
+
+    .status-badge.running {
+      background-color: #3498db;
+      color: white;
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-badge.completed {
+      background-color: #2ecc71;
+      color: white;
+    }
+
+    .status-badge.error {
+      background-color: #e74c3c;
+      color: white;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .mission-logs {
+      grid-column: 1 / 3;
+      background-color: #f9f9f9;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .mission-log-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .log-entry {
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      background-color: white;
+      border-left: 3px solid #ddd;
+    }
+
+    .log-entry.info {
+      border-left-color: #3498db;
+      color: #2c3e50;
+    }
+
+    .log-entry.success {
+      border-left-color: #2ecc71;
+      color: #27ae60;
+    }
+
+    .log-entry.warning {
+      border-left-color: #f39c12;
+      color: #d68910;
+    }
+
+    .log-entry.error {
+      border-left-color: #e74c3c;
+      color: #c0392b;
+    }
+
+    .log-timestamp {
+      font-size: 11px;
+      color: #999;
+      display: block;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .clear-logs-btn {
+      background-color: #95a5a6;
+      color: white;
+    }
+
+    .clear-logs-btn:hover {
+      background-color: #7f8c8d;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Missions</h1>
+      <h1>🚁 Missions</h1>
       <nav>
         <a href="/" style="color: white; text-decoration: none; background-color: #074761; padding: 8px 15px; border-radius: 4px;">Dashboard</a>
-        <a href="/map" style="color: white; text-decoration: none; background-color: #075512; padding: 8px 15px; border-radius: 4px;">Mapa misji</a>
+        <a href="/map" style="color: white; text-decoration: none; background-color: #075512; padding: 8px 15px; border-radius: 4px;">Map</a>
         <a href="/missions" style="color: white; text-decoration: none; background-color: #3498db; padding: 8px 15px; border-radius: 4px;">Missions</a>
         <a href="/logout" style="color: white; text-decoration: none; background-color: #e74c3c; padding: 8px 15px; border-radius: 4px;">Logout</a>
       </nav>
     </header>
 
     <section class="panel">
-      <div class="mission-buttons">
-        <button class="mission-btn" data-mission="1">Mission 1</button>
-        <button class="mission-btn secondary" data-mission="2">Mission 2</button>
-        <button class="mission-btn" data-mission="3">Mission 3</button>
-        <button class="mission-btn secondary" data-mission="4">Mission 4</button>
-        <button class="mission-btn" data-mission="5">Mission 5</button>
-        <button class="mission-btn secondary" data-mission="6">Mission 6</button>
+      <div class="missions-container">
+        <!-- Mission Cards -->
+        <div class="mission-cards" id="missionCardsContainer">
+          <div class="mission-card">
+            <button onclick="startMission(1)" id="mission-btn-1">Mission 1</button>
+            <div class="mission-info"><small>Click to start</small></div>
+          </div>
+          <div class="mission-card secondary">
+            <button onclick="startMission(2)" id="mission-btn-2">Mission 2</button>
+            <div class="mission-info"><small>Click to start</small></div>
+          </div>
+          <div class="mission-card">
+            <button onclick="startMission(3)" id="mission-btn-3">Mission 3</button>
+            <div class="mission-info"><small>Click to start</small></div>
+          </div>
+          <div class="mission-card secondary">
+            <button onclick="startMission(4)" id="mission-btn-4">Mission 4</button>
+            <div class="mission-info"><small>Click to start</small></div>
+          </div>
+          <div class="mission-card">
+            <button onclick="startMission(5)" id="mission-btn-5">Mission 5</button>
+            <div class="mission-info"><small>Click to start</small></div>
+          </div>
+          <div class="mission-card secondary">
+            <button onclick="startMission(6)" id="mission-btn-6">Mission 6</button>
+            <div class="mission-info"><small>Click to start</small></div>
+          </div>
+        </div>
+
+        <!-- Status Panel -->
+        <div class="status-panel">
+          <div class="status-title">Mission Status</div>
+          
+          <div class="status-row">
+            <span class="status-label">Current Mission:</span>
+            <span class="status-value" id="currentMission">-</span>
+          </div>
+          
+          <div class="status-row">
+            <span class="status-label">Status:</span>
+            <span class="status-value" id="missionState">-</span>
+          </div>
+
+          <div class="status-row">
+            <span class="status-label">Last Update:</span>
+            <span class="status-value" id="lastUpdate">-</span>
+          </div>
+
+          <div class="mission-progress">
+            <div style="font-weight: bold; color: #333;">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+            </div>
+          </div>
+
+          <div class="mission-timer">
+            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Elapsed Time</div>
+            <div class="timer-display" id="missionTimer">00:00:00</div>
+          </div>
+
+          <div id="statusBadgeContainer">
+            <span class="status-badge idle">Idle</span>
+          </div>
+        </div>
+
+        <!-- Mission Logs -->
+        <div class="mission-logs">
+          <div class="mission-log-title">Mission Activity Log</div>
+          <div id="missionLogsContainer" style="max-height: 250px; overflow-y: auto;">
+            <!-- Generated by JavaScript -->
+          </div>
+          <div class="action-buttons">
+            <button class="clear-logs-btn" id="clearMissionLogsBtn">Clear Logs</button>
+          </div>
+        </div>
       </div>
-      <div class="mission-output hidden" id="missionOutput"></div>
     </section>
   </div>
 
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
-    const output = document.getElementById('missionOutput');
-    document.querySelectorAll('.mission-btn').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const mission = btn.getAttribute('data-mission');
-        try {
-          const res = await fetch('/api/missions/start', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ mission: Number(mission) })
-          });
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-          }
-          output.textContent = `mission [${mission}] started.`;
-          output.classList.remove('hidden');
-        } catch (err) {
-          output.textContent = `mission [${mission}] failed to start.`;
-          output.classList.remove('hidden');
-          console.error(err);
+    // Mission Control State
+    let missionState = {
+      currentMission: null,
+      status: 'idle',
+      startTime: null,
+      timerInterval: null,
+      logs: []
+    };
+
+    const MISSIONS_COUNT = 6; // Number of available missions
+
+    // Initialize page
+    function init() {
+      renderMissionCards();
+      connectWebSocket();
+      loadMissionLogs();
+      updateStatusDisplay();
+    }
+
+    // Render mission cards
+    function renderMissionCards() {
+      const container = document.getElementById('missionCardsContainer');
+      if (container.children.length > 0) {
+        return;
+      }
+
+      container.innerHTML = '';
+
+      for (let i = 1; i <= MISSIONS_COUNT; i++) {
+        const isSecondary = i % 2 === 0;
+        const card = document.createElement('div');
+        card.className = `mission-card ${isSecondary ? 'secondary' : ''}`;
+        card.innerHTML = `
+          <button onclick="startMission(${i})" id="mission-btn-${i}">
+            Mission ${i}
+          </button>
+          <div class="mission-info">
+            <small>Click to start</small>
+          </div>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function disableAllButtons() {
+      for (let i = 1; i <= MISSIONS_COUNT; i++) {
+        const btn = document.getElementById(`mission-btn-${i}`);
+        if (btn) btn.disabled = true;
+      }
+    }
+
+    // Start mission
+    async function startMission(missionIndex) {
+      if (missionState.currentMission && missionState.status !== 'idle') {
+        showError(`Another mission is running. Please wait.`);
+        return;
+      }
+
+      disableAllButtons();
+      missionState.currentMission = missionIndex;
+      missionState.status = 'starting';
+
+      try {
+        const response = await fetch('/api/missions/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mission: missionIndex })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || `Failed to start mission ${missionIndex}`);
+        }
+
+        addMissionLog('info', `Mission ${missionIndex} start command sent`);
+        updateStatusDisplay();
+      } catch (error) {
+        console.error('Error starting mission:', error);
+        addMissionLog('error', error.message);
+        showError(error.message);
+        missionState.currentMission = null;
+        missionState.status = 'idle';
+        enableAllButtons();
+        updateStatusDisplay();
+      }
+    }
+
+    // Connect to WebSocket
+    function connectWebSocket() {
+      const socket = io({
+        transports: ['websocket', 'polling'],
+        reconnectionAttempts: 10
+      });
+
+      socket.on('connect', () => {
+        console.log('Connected to server');
+        addMissionLog('info', 'WebSocket connected');
+      });
+
+      socket.on('mission_status', (data) => {
+        console.log('Mission status received:', data);
+        handleMissionStatus(data);
+      });
+
+      socket.on('telemetry', (data) => {
+        if (data.log) {
+          addMissionLog(data.log.level || 'info', data.log.message);
         }
       });
+
+      socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+        addMissionLog('warning', 'WebSocket disconnected');
+      });
+    }
+
+    // Handle mission status update
+    function handleMissionStatus(data) {
+      const { status, mission, message, timestamp } = data;
+
+      missionState.currentMission = mission;
+      missionState.status = status;
+
+      if (status === 'starting') {
+        missionState.startTime = Date.now();
+        startMissionTimer();
+        addMissionLog('info', `Mission ${mission} started`);
+      } else if (status === 'finished') {
+        stopMissionTimer();
+        addMissionLog('success', `Mission ${mission} completed successfully`);
+        setTimeout(() => {
+          missionState.currentMission = null;
+          missionState.status = 'idle';
+          missionState.startTime = null;
+          enableAllButtons();
+          updateStatusDisplay();
+        }, 2000);
+      } else if (status === 'busy') {
+        addMissionLog('warning', `Mission ${mission}: ${message || 'Busy'}`);
+      }
+
+      updateStatusDisplay();
+    }
+
+    // Mission timer functions
+    function startMissionTimer() {
+      if (missionState.timerInterval) clearInterval(missionState.timerInterval);
+      updateMissionTimer();
+      missionState.timerInterval = setInterval(updateMissionTimer, 1000);
+    }
+
+    function stopMissionTimer() {
+      if (missionState.timerInterval) {
+        clearInterval(missionState.timerInterval);
+        missionState.timerInterval = null;
+      }
+    }
+
+    function updateMissionTimer() {
+      if (!missionState.startTime) return;
+      const elapsed = Math.floor((Date.now() - missionState.startTime) / 1000);
+      const hours = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+      const seconds = String(elapsed % 60).padStart(2, '0');
+      document.getElementById('missionTimer').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    // Update status display
+    function updateStatusDisplay() {
+      document.getElementById('currentMission').textContent = 
+        missionState.currentMission ? `Mission ${missionState.currentMission}` : '-';
+
+      const statusText = missionState.status.charAt(0).toUpperCase() + missionState.status.slice(1);
+      document.getElementById('missionState').textContent = statusText;
+
+      document.getElementById('lastUpdate').textContent = 
+        new Date().toLocaleTimeString();
+
+      // Update progress
+      let progress = 0;
+      if (missionState.status === 'starting') progress = 50;
+      if (missionState.status === 'finished') progress = 100;
+      const progressFill = document.getElementById('progressFill');
+      progressFill.style.width = `${progress}%`;
+      progressFill.textContent = `${progress}%`;
+
+      // Update badge
+      const badgeContainer = document.getElementById('statusBadgeContainer');
+      let badgeClass = 'idle';
+      if (missionState.status === 'starting') badgeClass = 'running';
+      if (missionState.status === 'finished') badgeClass = 'completed';
+      if (missionState.status === 'busy') badgeClass = 'busy';
+
+      badgeContainer.innerHTML = `<span class="status-badge ${badgeClass}">${statusText}</span>`;
+    }
+
+    // Mission logging
+    function addMissionLog(level, message) {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = {
+        level,
+        message,
+        timestamp
+      };
+
+      missionState.logs.unshift(logEntry);
+      if (missionState.logs.length > 50) missionState.logs.pop();
+
+      renderMissionLogs();
+    }
+
+    function renderMissionLogs() {
+      const container = document.getElementById('missionLogsContainer');
+      container.innerHTML = missionState.logs.map(log => `
+        <div class="log-entry ${log.level}">
+          <span class="log-timestamp">[${log.timestamp}]</span>
+          ${log.message}
+        </div>
+      `).join('');
+      container.scrollTop = 0;
+    }
+
+    function loadMissionLogs() {
+      fetch('/api/log')
+        .then(r => r.json())
+        .then(data => {
+          if (data.logs && Array.isArray(data.logs)) {
+            data.logs.forEach(log => {
+              addMissionLog(log.level || 'info', log.message);
+            });
+          }
+        })
+        .catch(err => console.error('Error loading logs:', err));
+    }
+
+    document.getElementById('clearMissionLogsBtn')?.addEventListener('click', () => {
+      fetch('/api/log', { method: 'DELETE' })
+        .then(() => {
+          missionState.logs = [];
+          renderMissionLogs();
+          addMissionLog('info', 'Logs cleared');
+        })
+        .catch(err => {
+          console.error('Error clearing logs:', err);
+          showError('Failed to clear logs');
+        });
     });
-  </script>
-</body>
-</html>
+
+    function enableAllButtons() {
+      for (let i = 1; i <= MISSIONS_COUNT; i++) {
+        const btn = document.getElementById(`mission-btn-${i}`);
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function showError(message) {
+      let errorBox = document.getElementById('error-display');
+      if (!errorBox) {
+        errorBox = document.createElement('div');
+        errorBox.id = 'error-display';
+        errorBox.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: #e74c3c;
+          color: white;
+          padding: 15px 20px;
+          border-radius: 4px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+          z-index: 1000;
+          max-width: 400px;
+        `;
+        document.body.appendChild(errorBox);
+      }
+      errorBox.textContent = message;
+      errorBox.style.display = 'block';
+      setTimeout(() => {
+        errorBox.style.display = 'none';
+      }, 5000);
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', init);

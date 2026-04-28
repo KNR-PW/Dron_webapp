@@ -169,6 +169,10 @@ function connectWebSocket() {
     socket.on('telemetry', (data) => {
         processIncomingData(data);
     });
+
+    socket.on('mission_status', (data) => {
+        handleMissionStatusUpdate(data);
+    });
 }
 
 function updateConnectionStatus(connected) {
@@ -251,6 +255,40 @@ function processIncomingData(data) {
             ? data.payload
             : JSON.stringify(data.payload);
         addLogEntry('mqtt', `[${data.topic}] ${payloadStr}`);
+    }
+}
+
+// Handle mission status updates from MQTT
+function handleMissionStatusUpdate(data) {
+    if (!data || typeof data !== 'object') {
+        console.warn('Invalid mission status data:', data);
+        return;
+    }
+
+    const { status, mission, message, timestamp } = data;
+    
+    console.log(`Mission ${mission} status: ${status}`, data);
+
+    // Dispatch custom event for mission status change
+    const event = new CustomEvent('missionStatusChange', {
+        detail: {
+            status: status,
+            mission: mission,
+            message: message,
+            timestamp: timestamp
+        }
+    });
+    document.dispatchEvent(event);
+
+    // Log the mission status
+    if (status === 'starting') {
+        addLogEntry('info', `Mission ${mission} starting`);
+    } else if (status === 'finished') {
+        addLogEntry('success', `Mission ${mission} completed successfully`);
+    } else if (status === 'busy') {
+        addLogEntry('warning', `Mission ${mission}: ${message || 'Busy'}`);
+    } else {
+        addLogEntry('info', `Mission ${mission} ${status}`);
     }
 }
 

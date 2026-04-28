@@ -117,7 +117,7 @@ MQTT_TOPICS = [
     t.strip()
     for t in os.getenv(
         "MQTT_TOPICS",
-        "sensor/battery,robot/pose,drone/status,drone/image"
+        "sensor/battery,robot/pose,drone/status,drone/image,drone/mission/status"
     ).split(",")
     if t.strip()
 ]
@@ -239,6 +239,33 @@ def _handle_mqtt_payload(topic: str, payload: Any) -> None:
 
             except Exception as e:
                 app.logger.error(f"Failed to decode or save image: {e}")
+
+    # ------------------------------------------------------
+    # MISSION STATUS HANDLING
+    # topic: "drone/mission/status"
+    # ------------------------------------------------------
+    if topic.endswith("mission/status") and isinstance(structured, dict):
+        mission_status = structured.get("status")  # "starting", "finished", "busy"
+        mission_idx = structured.get("mission")
+        mission_message = structured.get("message", "")
+        
+        socketio.emit("mission_status", {
+            "status": mission_status,
+            "mission": mission_idx,
+            "message": mission_message,
+            "timestamp": datetime.now(UTC).isoformat()
+        })
+        
+        if mission_status == "starting":
+            state.log_message(app, "info", f"Mission {mission_idx} starting")
+        elif mission_status == "finished":
+            state.log_message(app, "info", f"Mission {mission_idx} finished")
+        elif mission_status == "busy":
+            state.log_message(app, "warning", f"Mission {mission_idx}: {mission_message}")
+
+    # Also subscribe to mission status if not already subscribed
+    if topic.endswith("mission/status") and "drone/mission/status" not in MQTT_TOPICS:
+        MQTT_TOPICS.append("drone/mission/status")
 
     # ------------------------------------------------------
     # LOGGING OF MESSAGE
