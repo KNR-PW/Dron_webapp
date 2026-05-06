@@ -101,30 +101,49 @@ def handle_log():
 def start_mission():
     data = request.get_json(silent=True) or {}
     mission = data.get("mission")
+    
+    # Logging for debugging
+    current_app.logger.info(f"[MISSION START] Request received for mission {mission}")
+    
     if mission is None:
+        current_app.logger.error("[MISSION START] Mission ID not provided")
         return jsonify({'success': False, 'error': 'Mission is required'}), 400
+    
     try:
         mission = int(mission)
     except Exception:
+        current_app.logger.error(f"[MISSION START] Invalid mission type: {type(mission)}")
         return jsonify({'success': False, 'error': 'Mission must be an integer'}), 400
 
     client = current_app.config.get("MQTT_CLIENT")
+    current_app.logger.info(f"[MISSION START] MQTT Client: {client}")
+    
     if not client:
+        current_app.logger.error("[MISSION START] MQTT client not available!")
         return jsonify({'success': False, 'error': 'MQTT client not available'}), 503
 
     topic = current_app.config.get("MQTT_MISSION_TOPIC", "drone/mission/start")
     qos = int(current_app.config.get("MQTT_MISSION_QOS", 0))
     retain = bool(current_app.config.get("MQTT_MISSION_RETAIN", False))
     payload = {"mission": mission, "command": "start"}
+    
+    current_app.logger.info(f"[MISSION START] Publishing to {topic}")
+    current_app.logger.info(f"[MISSION START] Payload: {json.dumps(payload)}")
+    current_app.logger.info(f"[MISSION START] QoS: {qos}, Retain: {retain}")
 
     try:
         info = client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
+        current_app.logger.info(f"[MISSION START] Publish result: rc={info.rc}")
+        
         if info.rc != 0:
-            return jsonify({'success': False, 'error': f'MQTT publish failed ({info.rc})'}), 502
+            current_app.logger.error(f"[MISSION START] MQTT publish failed with rc={info.rc}")
+            return jsonify({'success': False, 'error': f'MQTT publish failed (rc={info.rc})'}), 502
     except Exception as exc:
+        current_app.logger.error(f"[MISSION START] Exception during publish: {exc}")
         return jsonify({'success': False, 'error': str(exc)}), 502
 
     state.log_message(current_app, "info", f"Mission {mission} start requested")
+    current_app.logger.info(f"[MISSION START] Mission {mission} start request logged successfully")
     return jsonify({'success': True, 'mission': mission})
 
 

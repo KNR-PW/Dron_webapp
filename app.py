@@ -11,6 +11,22 @@ import json
 import base64
 from typing import Any, Dict, Optional
 
+
+def _load_env_file(path: str) -> None:
+    if not os.path.exists(path):
+        return
+    with open(path, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip())
+
+
+_load_env_file("localhost.env")
+_load_env_file(".env")
+
 # Create Flask app and basic configuration
 app = Flask(__name__)
 
@@ -108,10 +124,10 @@ def _env_flag(name: str, default: str = "1") -> bool:
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 MQTT_ENABLED = _env_flag("MQTT_ENABLED", "1")
-MQTT_HOST = os.getenv("MQTT_HOST", "").strip()
-MQTT_PORT = int(os.getenv("MQTT_PORT", "8883"))
-MQTT_USERNAME = os.getenv("MQTT_USERNAME", "")
-MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "")
+MQTT_HOST = os.getenv("MQTT_HOST", "localhost").strip()
+MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
+MQTT_USERNAME = os.getenv("MQTT_USERNAME", "").strip()
+MQTT_PASSWORD = os.getenv("MQTT_PASSWORD", "").strip()
 
 MQTT_TOPICS = [
     t.strip()
@@ -293,7 +309,7 @@ def _handle_mqtt_payload(topic: str, payload: Any) -> None:
 # ------------------------------------------------------
 # MQTT CALLBACKS
 # ------------------------------------------------------
-def _on_mqtt_message(client, userdata, msg):
+def _on_mqtt_message(client, userdata, msg, properties=None):
     raw = msg.payload
     decoded: Any = raw
 
@@ -314,7 +330,7 @@ def _on_mqtt_message(client, userdata, msg):
     _handle_mqtt_payload(msg.topic, decoded)
 
 
-def _on_mqtt_connect(client, userdata, flags, rc):
+def _on_mqtt_connect(client, userdata, flags, rc, properties=None):
     app.logger.info(f"[MQTT] Connected with code {rc}")
     if rc != 0:
         return
@@ -332,15 +348,19 @@ def _start_mqtt_bridge() -> None:
     if not MQTT_ENABLED:
         app.logger.info("MQTT_DISABLED")
         return
-    if not MQTT_HOST:
-        app.logger.warning("MQTT_HOST empty → MQTT disabled")
-        return
 
-    mqtt_client = mqtt.Client()
+    # Use same MQTT client config as drone (init.py) for compatibility
+    mqtt_client = mqtt.Client(
+        client_id="flask_mqtt_bridge",
+        protocol=mqtt.MQTTv5,
+        callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
+    )
     app.config["MQTT_CLIENT"] = mqtt_client
 
     try:
-        mqtt_client.tls_set(tls_version=ssl.PROTOCOL_TLS)
+        # TLS only for cloud brokers, skip for localhost
+        if MQTT_HOST not in ("localhost", "127.0.0.1"):
+            mqtt_client.tls_set(tls_version=ssl.PROTOCOL_TLS)
     except Exception as exc:
         app.logger.warning(f"MQTT TLS configuration failed: {exc}")
 
@@ -384,4 +404,4 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", "5000"))
     debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
 
-    socketio.run(app, host="0.0.0.0", port=port, debug=debug)
+    socketio.run(app, host="0.0.0.0", port=port, debug=debug, allow_unsafe_werkzeug=True)
